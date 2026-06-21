@@ -1,0 +1,237 @@
+// =====================================================================
+// MEP Resource Command Center — Schéma de données (PostgreSQL / Prisma)
+// =====================================================================
+// Conçu pour être portable : aucune extension PostgreSQL exotique requise.
+// Les montants ($) sont en Float pour simplifier le MVP ; en production,
+// migrer vers Decimal pour une précision comptable.
+// ---------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------- Enums ---------------------------------
+
+enum ProjectStatus {
+  PLANNING // En planification
+  ACTIVE // En cours
+  ON_HOLD // En attente
+  COMPLETED // Terminé
+  CANCELLED // Annulé
+}
+
+enum AbsenceType {
+  VACATION // Vacances
+  SICK // Congé maladie
+  TRAINING // Formation
+  HOLIDAY // Jour férié
+  PARENTAL // Congé parental
+  OTHER // Autre
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserRole {
+  ADMIN // Accès complet
+  MANAGER // Gestionnaire / chargé de projet
+  VIEWER // Lecture seule
+}
+
+// --------------------------- Référentiels ----------------------------
+
+model Office {
+  id        String     @id @default(cuid())
+  name      String     @unique // Ex.: Montréal, Québec, Gatineau
+  city      String
+  province  String     @default("QC")
+  employees Employee[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Discipline {
+  id        String     @id @default(cuid())
+  name      String     @unique // Électricité, Mécanique/CVAC, Plomberie...
+  code      String     @unique // ELEC, MECA, PLOM, PROT, CTRL
+  color     String     @default("#64748b") // Couleur pour les graphiques
+  employees Employee[]
+  projects  Project[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// ----------------------------- Employés ------------------------------
+
+model Employee {
+  id                  String         @id @default(cuid())
+  employeeNo          String         @unique // Matricule
+  firstName           String
+  lastName            String
+  email               String         @unique
+  title               String // Poste (ex.: Ingénieur électrique, Concepteur)
+  status              EmployeeStatus @default(ACTIVE)
+  hireDate            DateTime
+  weeklyCapacityHours Float          @default(37.5) // Capacité hebdomadaire
+  billableTargetPct   Int            @default(80) // Cible de facturation %
+  costRate            Float          @default(0) // Coût horaire interne ($)
+  billRate            Float          @default(0) // Taux facturable ($)
+
+  disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  officeId     String
+  office       Office     @relation(fields: [officeId], references: [id])
+
+  // Gestionnaire (relation hiérarchique réflexive)
+  managerId String?
+  manager   Employee?  @relation("EmployeeManager", fields: [managerId], references: [id])
+  reports   Employee[] @relation("EmployeeManager")
+
+  allocations     Allocation[]
+  timeEntries     TimeEntry[]
+  absences        Absence[]
+  managedProjects Project[]    @relation("ProjectManager")
+
+  user User?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([disciplineId])
+  @@index([officeId])
+  @@index([managerId])
+}
+
+// ----------------------------- Clients -------------------------------
+
+model Client {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  code      String    @unique
+  sector    String? // Santé, Institutionnel, Commercial, Industriel...
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ----------------------------- Projets -------------------------------
+
+model Project {
+  id              String        @id @default(cuid())
+  number          String        @unique // Numéro de projet
+  name            String
+  status          ProjectStatus @default(ACTIVE)
+  budgetHours     Float // Budget d'heures
+  budgetFees      Float // Budget d'honoraires ($)
+  percentComplete Int           @default(0) // Avancement % (saisi par le CP)
+  startDate       DateTime
+  endDate         DateTime
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+
+  // Chargé de projet
+  projectManagerId String
+  projectManager   Employee @relation("ProjectManager", fields: [projectManagerId], references: [id])
+
+  allocations Allocation[]
+  timeEntries TimeEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([disciplineId])
+  @@index([projectManagerId])
+  @@index([status])
+}
+
+// ------------------ Affectations planifiées (prévu) ------------------
+// Heures planifiées par employé, par projet, par semaine.
+
+model Allocation {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  weekStart  DateTime // Lundi de la semaine (référence ISO)
+  hours      Float // Heures planifiées cette semaine
+  note       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeId, projectId, weekStart])
+  @@index([weekStart])
+  @@index([projectId, weekStart])
+  @@index([employeeId, weekStart])
+}
+
+// ------------------- Saisies de temps (réalisé) ----------------------
+// Heures réellement travaillées par employé, par projet, par semaine.
+
+model TimeEntry {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  weekStart  DateTime
+  hours      Float
+  billable   Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([weekStart])
+  @@index([projectId, weekStart])
+  @@index([employeeId, weekStart])
+}
+
+// --------------------------- Absences --------------------------------
+// Vacances, congés, formation : réduisent la disponibilité réelle.
+
+model Absence {
+  id         String      @id @default(cuid())
+  employeeId String
+  employee   Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type       AbsenceType
+  startDate  DateTime
+  endDate    DateTime
+  hours      Float // Heures d'absence sur la période
+  note       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([startDate])
+}
+
+// ------------------------ Authentification ---------------------------
+// Utilisé par NextAuth (Credentials + JWT). Lié optionnellement à un employé.
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         UserRole @default(VIEWER)
+
+  employeeId String?   @unique
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
