@@ -2,10 +2,44 @@
 // Moteur de recommandations déterministe (règles métier).
 // Répond aux questions clés sans dépendre d'une API externe.
 // =====================================================================
-import type { EmployeeRow, ProjectRow } from "./queries";
+import type { EmployeeRow, ProjectRow, FirmFinance, DisciplineCapacity } from "./queries";
 import type { Severity } from "./detections";
-import { fmtHours, fmtPct } from "./format";
+import { fmtHours, fmtPct, fmtCurrency, fmtCurrencyCompact } from "./format";
 import { PROJECT_STATUS_LABELS } from "./labels";
+
+export interface AssistantData {
+  roster: EmployeeRow[];
+  projects: ProjectRow[];
+  firm?: FirmFinance;
+  disciplines?: DisciplineCapacity[];
+}
+
+/** Rentabilité réelle par projet (honoraires − coûts réels QuickBooks). */
+export function projectProfitability(rows: ProjectRow[]) {
+  return rows
+    .filter((p) => p.project.budgetFees > 0)
+    .map((p) => {
+      const fees = p.project.budgetFees;
+      const cost = p.project.actualCost;
+      const profit = fees - cost;
+      return { p, fees, cost, profit, marginPct: fees > 0 ? (profit / fees) * 100 : 0 };
+    })
+    .sort((a, b) => b.marginPct - a.marginPct);
+}
+
+/** Extrait un montant en $ d'une question (« 250 000 $ », « 250k », « 1,2 M »). */
+export function parseAmount(q: string): number | null {
+  const k = q.match(/(\d+(?:[.,]\d+)?)\s*k\b/i);
+  if (k) return Math.round(parseFloat(k[1].replace(",", ".")) * 1_000);
+  const m = q.match(/(\d+(?:[.,]\d+)?)\s*m\b/i);
+  if (m) return Math.round(parseFloat(m[1].replace(",", ".")) * 1_000_000);
+  const n = q.match(/(\d[\d\s]{2,}\d|\d{4,})\s*\$?/);
+  if (n) {
+    const v = parseInt(n[1].replace(/\s/g, ""), 10);
+    if (v >= 1000) return v;
+  }
+  return null;
+}
 
 export interface Recommendation {
   id: string;
@@ -166,20 +200,91 @@ export interface Answer {
 }
 
 export const SUGGESTED_QUESTIONS = [
+  "Puis-je accepter un mandat de 250 000 $ ?",
+  "Quels sont les projets les plus et les moins rentables ?",
+  "Quelle discipline manque de capacité ?",
+  "Quelle est la situation financière de la firme ?",
   "Qui est disponible cette période ?",
   "Qui est surchargé ?",
   "Quels projets risquent de dépasser leur budget ?",
-  "Quels projets risquent d'être en retard ?",
-  "Quel employé devrait recevoir la prochaine tâche ?",
-  "Comment équilibrer la charge de travail ?",
+  "Quels projets sont en retard ?",
 ];
 
-export function answerQuestion(
-  question: string,
-  ctx: { roster: EmployeeRow[]; projects: ProjectRow[] },
-): Answer {
+export function answerQuestion(question: string, ctx: AssistantData): Answer {
   const q = question.toLowerCase();
-  const { roster, projects } = ctx;
+  const { roster, projects, firm, disciplines } = ctx;
+
+  // --- Faisabilité d'un mandat : « puis-je accepter un mandat de X $ ? » ---
+  if (disciplines && (q.includes("mandat") || q.includes("accepter") || q.includes("nouveau projet") || q.includes("contrat"))) {
+    const amount = parseAmount(q);
+    const totalAvail = disciplines.reduce((s, d) => s + d.availableWeeklyHours, 0);
+    const tight = [...disciplines].sort((a, b) => b.recentUtilizationPct - a.recentUtilizationPct).slice(0, 2);
+    if (amount) {
+      const prod = amount * 0.55; // 30% profit + 10% frais + 5% réserve
+      const avgRate =
+        disciplines.reduce((s, d) => s + d.avgLoadedRate * d.headcount, 0) /
+        Math.max(1, disciplines.reduce((s, d) => s + d.headcount, 0));
+      const hours = avgRate > 0 ? prod / avgRate : 0;
+      const weeks = totalAvail > 0 ? hours / totalAvail : 0;
+      return {
+        title: "Faisabilité du mandat",
+        markdown:
+          `Pour un mandat de **${fmtCurrency(amount)}** (cible 30 % profit / 10 % frais / 5 % réserve) :\n\n` +
+          `- Budget de production : **${fmtCurrency(prod)}**\n` +
+          `- Effort estimé : **${fmtHours(hours)}** (≈ ${fmtCurrency(avgRate)}/h chargé moyen)\n` +
+          `- Disponibilité firme : **${fmtHours(totalAvail)}/sem.** → absorbable en **~${weeks.toFixed(0)} semaine(s)** à pleine dispo\n` +
+          `- Disciplines déjà les plus chargées : ${tight.map((d) => `**${d.discipline}** (${fmtPct(d.recentUtilizationPct)})`).join(", ")}\n\n` +
+          `→ Pour un verdict précis (durée + répartition par discipline), utilise le **Simulateur de mandat**.`,
+      };
+    }
+    return {
+      title: "Capacité pour un nouveau mandat",
+      markdown:
+        `Disponibilité totale : **${fmtHours(totalAvail)}/sem.**. Disciplines les plus chargées : ${tight.map((d) => `**${d.discipline}** (${fmtPct(d.recentUtilizationPct)})`).join(", ")}.\n\n` +
+        `Précise un montant (ex. « un mandat de 250 000 $ ») ou utilise le **Simulateur**.`,
+    };
+  }
+
+  // --- Capacité par discipline : « quelle discipline manque de capacité ? » ---
+  if (disciplines && q.includes("discipline") && (q.includes("capacit") || q.includes("manque") || q.includes("disponib") || q.includes("charg"))) {
+    const sorted = [...disciplines].sort((a, b) => b.recentUtilizationPct - a.recentUtilizationPct);
+    return {
+      title: "Capacité par discipline",
+      markdown: sorted
+        .map((d) => `- **${d.discipline}** — ${d.headcount} pers., utilisation **${fmtPct(d.recentUtilizationPct)}**, ${fmtHours(d.availableWeeklyHours)}/sem. dispo (taux moy. ${fmtCurrency(d.avgLoadedRate)}/h)`)
+        .join("\n"),
+    };
+  }
+
+  // --- Situation financière de la firme ---
+  if (firm && (q.includes("firme") || q.includes("revenu") || q.includes("chiffre") || q.includes("financ") || q.includes("taxe") || q.includes("tps") || q.includes("tvq") || q.includes("résultat net") || q.includes("resultat net") || q.includes("perte nette") || q.includes("obligation"))) {
+    return {
+      title: "Situation financière de la firme",
+      markdown:
+        `Pour ${firm.periodLabel} :\n\n` +
+        `- Revenu total : **${fmtCurrency(firm.totalRevenue)}**\n` +
+        `- Dépenses : **${fmtCurrency(firm.totalExpenses)}**\n` +
+        `- Résultat net : **${fmtCurrency(firm.netResult)}** ${firm.netResult < 0 ? "⚠️ (perte)" : "✓"}\n` +
+        `- Obligations fiscales à remettre (TPS/TVQ/DAS/pénalités) : **${fmtCurrency(firm.totalObligations)}**\n` +
+        `- Résultat net après obligations : **${fmtCurrency(firm.afterObligations)}**`,
+    };
+  }
+
+  // --- Rentabilité réelle des projets ---
+  if (q.includes("rentab") || q.includes("marge") || q.includes("profit") || q.includes("meilleur") || q.includes("pire") || q.includes("perte")) {
+    const prof = projectProfitability(projects);
+    if (!prof.length) return { title: "Rentabilité", markdown: "Aucun projet avec honoraires renseignés." };
+    const fmtRow = (x: (typeof prof)[number]) =>
+      `**${x.p.project.number}** ${x.p.project.name} — marge **${fmtPct(x.marginPct)}** (${fmtCurrencyCompact(x.fees)} − ${fmtCurrencyCompact(x.cost)} = ${fmtCurrencyCompact(x.profit)})`;
+    const best = prof.slice(0, 5).map((x) => `- 🟢 ${fmtRow(x)}`).join("\n");
+    const worst = [...prof].reverse().slice(0, 5).map((x) => `- 🔴 ${fmtRow(x)}`).join("\n");
+    const below = prof.filter((x) => x.marginPct < 30).length;
+    const loss = prof.filter((x) => x.profit < 0).length;
+    return {
+      title: "Rentabilité des projets (réel, QuickBooks)",
+      markdown: `**Meilleures marges**\n${best}\n\n**Plus faibles marges**\n${worst}\n\n_${below} projet(s) sous la cible de 30 %, dont ${loss} en perte._`,
+    };
+  }
 
   if (q.includes("disponible") || q.includes("dispo")) {
     const list = whoIsAvailable(roster).slice(0, 8);

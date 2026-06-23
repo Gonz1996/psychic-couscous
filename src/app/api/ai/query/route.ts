@@ -12,19 +12,19 @@ export async function POST(req: Request) {
   const question = typeof body?.question === "string" ? body.question : "";
   if (!question.trim()) return NextResponse.json({ error: "Question manquante" }, { status: 400 });
 
-  const { roster, projects } = await getAssistantContext();
+  const { roster, projects, firm, disciplines } = await getAssistantContext();
 
   if (isClaudeEnabled()) {
     try {
-      const snapshot = buildLLMSnapshot(roster, projects);
+      const snapshot = buildLLMSnapshot(roster, projects, firm, disciplines);
       const answer = await askClaude(question, snapshot);
       return NextResponse.json({ answer, source: "claude" });
     } catch {
-      const a = answerQuestion(question, { roster, projects });
+      const a = answerQuestion(question, { roster, projects, firm, disciplines });
       return NextResponse.json({ answer: a.markdown, source: "rules", note: "IA externe indisponible — repli local." });
     }
   }
 
-  const a = answerQuestion(question, { roster, projects });
+  const a = answerQuestion(question, { roster, projects, firm, disciplines });
   return NextResponse.json({ answer: a.markdown, source: "rules" });
 }
