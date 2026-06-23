@@ -287,9 +287,9 @@ Exemple spec : Honoraires 100 000 $, profit 30 %, frais 10 %, réserve 5 % → *
 1. ~~Import QuickBooks (#26)~~ ✅ **fait** (2026-06-22, §14).
 2. ~~**Phase B — Tableau de bord Direction**~~ ✅ **fait** (2026-06-23, §15) : page `/direction`, financier réalisé (honoraires/coûts/profit/marge globale 34,7 %) + ressources + rentabilité par projet.
 3. ~~Réconciliation revenus~~ ✅ + ~~Branding MEP~~ ✅ + ~~Vue firme & obligations fiscales~~ ✅ + ~~seuils 85/100/115~~ ✅ + ~~taux chargés (dérivés paie)~~ ✅ (2026-06-23, §16).
-4. **Phase B — il reste : génération d'affectations par courbe** (`Allocation` hebdo depuis `ProjectStaffing` entre start/end, courbe uniforme/front/back) — bouton dans l'éditeur de planif. (Les taux chargés sont désormais en place, donc la cascade produit des heures.)
-5. Au passage : **feedback ergonomie** de `/projets/[id]/planification` + questions §9 (dates/% projets, courbe par défaut, **valider les taux chargés estimés**).
-6. Puis **Phase C** (simulation + copilote IA).
+4. ~~Génération d'affectations par courbe~~ ✅ **fait** (2026-06-23, §17). **Phase B complète.**
+5. **Phase C** : module **Simulation** (« et si » sans enregistrer, réutilise `finance.ts` pur côté client) + **copilote IA** (étendre `/ia`, brancher `@anthropic-ai/sdk`).
+6. Transverses (§8) : feedback ergonomie planif, **vraies dates/% projets** (les affectations générées sont sur des dates placeholder), valider les **taux chargés estimés**, UI disciplines, admin utilisateurs, montants Decimal, déploiement Vercel.
 
 ---
 
@@ -336,6 +336,18 @@ Commits `bd67436`, `a187abb`, `3532348`, `8b0c4bb`, `50cf992`. `tsc` OK, pages 2
 - **Vue firme + obligations fiscales** : migration `add_firm_finance` (singleton, pré-rempli État des résultats : revenu **1 576 803 $**, dépenses 1 635 995 $, net **−59 192 $**), `getFirmFinance()`, action `saveFirmFinance` (RBAC), formulaire éditable TPS/TVQ/DAS/pénalités sur `/direction`. ⚠️ La marge projet (34–38 %) est **avant** overhead ; la firme est en **perte nette**.
 - **Seuils 85/100/115** : `thresholds.ts` (`CRITICAL_PCT` 110→115) + usages.
 - **Taux chargés** : `prisma/derive-cost-rates.ts` — `costRate = paie nette (Bilan) × 1,45 ÷ heures totales loggées`. 42–173 $/h (moy. 93). **Validé** : Σ coût MO 854 k$ vs coût QB 914 k$ = 93 %. Débloque la marge projetée + cascade. **ESTIMATION** — ajustable via formulaire employé (« Coût horaire »). Bruité par projet si saisie de temps incomplète.
+
+---
+
+## 17. SESSION 2026-06-23 (fin) — Génération d'affectations par courbe
+
+Commit `891a1b6`. `tsc` OK, vérifié de bout en bout. **Phase B complète.**
+
+- **`src/lib/scheduling.ts`** (pur) : `LoadCurve` = uniforme/avant/arrière, `curveWeights(n, curve)` (poids normalisés), `distributeHours(total, n, curve)` (somme exacte préservée, reliquat d'arrondi sur dernière semaine).
+- **`generateAllocations(projectId, curve)`** (dans `actions/planning.ts`) : recompute la cascade depuis le plan enregistré (`ProjectStaffing`/`ProjectDiscipline`) → heures ajustées par employé → étalées sur les lundis entre `startDate`/`endDate` → `Allocation` (delete + createMany agrégé). RBAC.
+- **Éditeur de planif** : sélecteur de courbe + bouton « Générer les affectations » (agit sur le plan **enregistré**).
+- **Démo** : projet **24109** doté d'un plan (Méca 50 / Élec 30 / Coord 20) + 162 `Allocation` sur 54 sem. → visible dans `/capacite` et le dashboard. Régénérable/effaçable via l'éditeur.
+- ⚠️ Dates projets = placeholder → affectations étalées sur ~1 an fictif. Saisir les vraies dates pour un échéancier réel.
 
 ---
 *Fin du document de transition. Tout le code est sur `C:\mep-rcc` (exécutable, git) avec sauvegarde sur `Q:\…\mep-resource-command-center`.*
