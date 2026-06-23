@@ -50,7 +50,7 @@ export function Shell({
 
   const Nav = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map((item) => {
+      {NAV_ITEMS.filter((item) => !item.adminOnly || user.role === "ADMIN").map((item) => {
         const active = pathname === item.href || pathname.startsWith(item.href + "/");
         const Icon = item.icon;
         return (

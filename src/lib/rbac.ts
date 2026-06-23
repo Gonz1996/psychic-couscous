@@ -13,3 +13,16 @@ export async function requireWrite() {
   }
   return session!.user;
 }
+
+/** Seul l'administrateur peut gérer les comptes utilisateurs. */
+export function isAdmin(role?: string | null): boolean {
+  return role === "ADMIN";
+}
+
+export async function requireAdmin() {
+  const session = await auth();
+  if (!isAdmin(session?.user?.role)) {
+    throw new Error("Accès refusé : droits administrateur requis.");
+  }
+  return session!.user;
+}
