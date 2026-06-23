@@ -425,3 +425,62 @@ export async function getFirmFinance() {
 }
 
 export type FirmFinance = Awaited<ReturnType<typeof getFirmFinance>>;
+
+// ---------- Capacité par discipline (pour le simulateur de mandat) ----------
+// Pour chaque discipline : effectif, capacité hebdo, taux chargé moyen et
+// disponibilité estimée à partir de l'utilisation réelle récente.
+
+export interface DisciplineCapacity {
+  disciplineId: string;
+  discipline: string;
+  color: string;
+  headcount: number;
+  weeklyCapacity: number; // h/sem (Σ capacité des employés actifs)
+  avgLoadedRate: number; // $/h (moyenne costRate)
+  recentUtilizationPct: number; // utilisation réelle récente (heures saisies)
+  availableWeeklyHours: number; // capacité − charge réelle récente
+}
+
+export async function getDisciplineCapacity(): Promise<DisciplineCapacity[]> {
+  const [employees, timeEntries] = await Promise.all([
+    prisma.employee.findMany({
+      where: { status: "ACTIVE" },
+      select: { weeklyCapacityHours: true, costRate: true, discipline: { select: { id: true, name: true, color: true } } },
+    }),
+    prisma.timeEntry.findMany({ select: { weekStart: true, hours: true, employee: { select: { discipline: { select: { id: true } } } } } }),
+  ]);
+
+  const numWeeks = Math.max(1, new Set(timeEntries.map((t) => weekKey(t.weekStart))).size);
+  const actualByDisc = new Map<string, number>();
+  for (const t of timeEntries) {
+    const id = t.employee.discipline.id;
+    actualByDisc.set(id, (actualByDisc.get(id) ?? 0) + t.hours);
+  }
+
+  const map = new Map<string, { d: { id: string; name: string; color: string }; cap: number; rateSum: number; n: number }>();
+  for (const e of employees) {
+    const id = e.discipline.id;
+    const cur = map.get(id) ?? { d: e.discipline, cap: 0, rateSum: 0, n: 0 };
+    cur.cap += e.weeklyCapacityHours;
+    cur.rateSum += e.costRate;
+    cur.n += 1;
+    map.set(id, cur);
+  }
+
+  return [...map.values()]
+    .map((m) => {
+      const weeklyActual = (actualByDisc.get(m.d.id) ?? 0) / numWeeks;
+      const recentUtilizationPct = m.cap > 0 ? (weeklyActual / m.cap) * 100 : 0;
+      return {
+        disciplineId: m.d.id,
+        discipline: m.d.name,
+        color: m.d.color,
+        headcount: m.n,
+        weeklyCapacity: Math.round(m.cap),
+        avgLoadedRate: m.n > 0 ? Math.round(m.rateSum / m.n) : 0,
+        recentUtilizationPct: Math.round(recentUtilizationPct),
+        availableWeeklyHours: Math.round(Math.max(0, m.cap - weeklyActual)),
+      };
+    })
+    .sort((a, b) => b.headcount - a.headcount);
+}

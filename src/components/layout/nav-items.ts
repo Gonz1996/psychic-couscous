@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Landmark,
+  FlaskConical,
   Users,
   FolderKanban,
   Contact,
@@ -25,6 +26,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/projets", label: "Projets", icon: FolderKanban },
   { href: "/clients", label: "Clients", icon: Contact },
   { href: "/capacite", label: "Capacité", icon: CalendarRange },
+  { href: "/simulation", label: "Simulateur", icon: FlaskConical },
   { href: "/saisie", label: "Saisie de temps", icon: Clock },
   { href: "/alertes", label: "Alertes", icon: Bell },
   { href: "/ia", label: "Assistant IA", icon: Sparkles },
