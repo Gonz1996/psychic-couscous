@@ -22,6 +22,8 @@ export default async function ProjetsPage() {
       pm: `${p.project.projectManager.firstName} ${p.project.projectManager.lastName}`,
       discipline: p.project.discipline.name,
       status: p.project.status,
+      inConception: p.project.inConception,
+      inSurveillance: p.project.inSurveillance,
       budgetHours: Math.round(p.project.budgetHours),
       consumed: Math.round(p.metrics.hoursConsumed),
       pctHoursUsed: Math.round(p.metrics.pctHoursUsed),

@@ -56,6 +56,19 @@ export function ProjectForm({
             <Field label="Date de début" name="startDate" type="date" defaultValue={d.startDate} error={err.startDate} required />
             <Field label="Date de fin" name="endDate" type="date" defaultValue={d.endDate} error={err.endDate} required />
           </div>
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">Phase du projet</legend>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="inConception" defaultChecked={d.inConception === "1"} className="size-4 rounded border-input" />
+                En conception
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="inSurveillance" defaultChecked={d.inSurveillance === "1"} className="size-4 rounded border-input" />
+                En surveillance
+              </label>
+            </div>
+          </fieldset>
           <div className="flex gap-2">
             <Button type="submit" disabled={pending}>
               {pending && <Loader2 className="size-4 animate-spin" />}

@@ -142,6 +142,8 @@ model Project {
   overheadPct     Int           @default(10) // Frais généraux (%)
   riskReservePct  Int           @default(5) // Réserve de risque (%)
   percentComplete Int           @default(0) // Avancement % (saisi par le CP)
+  inConception    Boolean       @default(false) // Phase conception (design)
+  inSurveillance  Boolean       @default(false) // Phase surveillance (chantier)
   startDate       DateTime
   endDate         DateTime
 

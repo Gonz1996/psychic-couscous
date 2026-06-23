@@ -18,6 +18,8 @@ export interface ProjectRowDTO {
   pm: string;
   discipline: string;
   status: string;
+  inConception: boolean;
+  inSurveillance: boolean;
   budgetHours: number;
   consumed: number;
   pctHoursUsed: number;
@@ -34,19 +36,36 @@ function budgetColor(pct: number) {
   return "bg-emerald-500";
 }
 
+function PhaseBadges({ c, s }: { c: boolean; s: boolean }) {
+  if (!c && !s) return null;
+  return (
+    <>
+      {c && <span className="rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-blue-700">Conception</span>}
+      {s && <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-amber-700">Surveillance</span>}
+    </>
+  );
+}
+
 export function ProjectsTable({ rows }: { rows: ProjectRowDTO[] }) {
   const [q, setQ] = React.useState("");
   const [status, setStatus] = React.useState("all");
+  const [phase, setPhase] = React.useState("all");
 
   const statuses = React.useMemo(() => [...new Set(rows.map((r) => r.status))], [rows]);
+  const matchPhase = (r: ProjectRowDTO) =>
+    phase === "all" ||
+    (phase === "conception" && r.inConception) ||
+    (phase === "surveillance" && r.inSurveillance) ||
+    (phase === "none" && !r.inConception && !r.inSurveillance);
   const filtered = React.useMemo(
     () =>
       rows.filter(
         (r) =>
           (status === "all" || r.status === status) &&
+          matchPhase(r) &&
           (q === "" || `${r.number} ${r.name} ${r.client}`.toLowerCase().includes(q.toLowerCase())),
       ),
-    [rows, q, status],
+    [rows, q, status, phase],
   );
 
   return (
@@ -69,6 +88,16 @@ export function ProjectsTable({ rows }: { rows: ProjectRowDTO[] }) {
               {PROJECT_STATUS_LABELS[s] ?? s}
             </option>
           ))}
+        </select>
+        <select
+          value={phase}
+          onChange={(e) => setPhase(e.target.value)}
+          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+        >
+          <option value="all">Toutes les phases</option>
+          <option value="conception">Conception</option>
+          <option value="surveillance">Surveillance</option>
+          <option value="none">Non spécifié</option>
         </select>
         <span className="text-sm text-muted-foreground sm:ml-auto">{filtered.length} projet(s)</span>
       </div>
@@ -102,6 +131,7 @@ export function ProjectsTable({ rows }: { rows: ProjectRowDTO[] }) {
                     >
                       {PROJECT_STATUS_LABELS[r.status] ?? r.status}
                     </span>
+                    <PhaseBadges c={r.inConception} s={r.inSurveillance} />
                     <span>{r.client}</span>
                   </div>
                 </Link>

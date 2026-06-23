@@ -31,7 +31,7 @@ function fieldErrors(err: z.ZodError) {
   return out;
 }
 
-function toData(d: z.infer<typeof schema>) {
+function toData(d: z.infer<typeof schema>, fd: FormData) {
   return {
     number: d.number,
     name: d.name,
@@ -42,6 +42,8 @@ function toData(d: z.infer<typeof schema>) {
     budgetHours: d.budgetHours,
     budgetFees: d.budgetFees,
     percentComplete: d.percentComplete,
+    inConception: fd.get("inConception") === "on",
+    inSurveillance: fd.get("inSurveillance") === "on",
     startDate: new Date(d.startDate),
     endDate: new Date(d.endDate),
   };
@@ -52,7 +54,7 @@ export async function createProject(_prev: FormState, formData: FormData): Promi
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Veuillez corriger les champs indiqués.", fieldErrors: fieldErrors(parsed.error) };
   try {
-    await prisma.project.create({ data: toData(parsed.data) });
+    await prisma.project.create({ data: toData(parsed.data, formData) });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")
       return { error: "Ce numéro de projet existe déjà." };
@@ -67,7 +69,7 @@ export async function updateProject(id: string, _prev: FormState, formData: Form
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Veuillez corriger les champs indiqués.", fieldErrors: fieldErrors(parsed.error) };
   try {
-    await prisma.project.update({ where: { id }, data: toData(parsed.data) });
+    await prisma.project.update({ where: { id }, data: toData(parsed.data, formData) });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")
       return { error: "Ce numéro de projet existe déjà." };

@@ -35,6 +35,8 @@ export default async function ModifierProjetPage({ params }: { params: Promise<{
     budgetHours: String(proj.budgetHours),
     budgetFees: String(proj.budgetFees),
     percentComplete: String(proj.percentComplete),
+    inConception: proj.inConception ? "1" : "",
+    inSurveillance: proj.inSurveillance ? "1" : "",
     startDate: proj.startDate.toISOString().slice(0, 10),
     endDate: proj.endDate.toISOString().slice(0, 10),
   };
