@@ -284,10 +284,11 @@ Occupation        = Heures assignées ÷ Heures disponibles              [seuils
 Exemple spec : Honoraires 100 000 $, profit 30 %, frais 10 %, réserve 5 % → **Budget production = 55 000 $**.
 
 ### Prochaine étape recommandée
-1. ~~Import QuickBooks (#26)~~ ✅ **fait** (session 2026-06-22, voir §14).
-2. **Phase B** — démarrer par la **génération d'affectations par courbe** (`Allocation` hebdo depuis les `ProjectStaffing`), puis **dashboard Direction** (réel vs prévu / EAC / marge projetée), puis **alignement des seuils** sur 85/100/115.
-3. Au passage, demander au client le **feedback ergonomie** de `/projets/[id]/planification` et trancher les **questions ouvertes** restantes (§9 : taux chargés, productivité, dates/% projets, courbe par défaut).
-4. Puis **Phase C** (simulation + copilote IA).
+1. ~~Import QuickBooks (#26)~~ ✅ **fait** (2026-06-22, §14).
+2. ~~**Phase B — Tableau de bord Direction**~~ ✅ **fait** (2026-06-23, §15) : page `/direction`, financier réalisé (honoraires/coûts/profit/marge globale 34,7 %) + ressources + rentabilité par projet.
+3. **Phase B (suite)** — il reste : **alignement des seuils** 85/100/115 (+ bande Critique, `thresholds.ts`) ; **débloquer les taux horaires chargés** (`costRate`, question §9.1) qui conditionne le volet **projeté** (EAC $, marge projetée) ET la **génération d'affectations par courbe** (`Allocation` depuis `ProjectStaffing`).
+4. Au passage : **feedback ergonomie** de `/projets/[id]/planification` + questions ouvertes §9 (dates/% projets, courbe par défaut).
+5. Puis **Phase C** (simulation + copilote IA).
 
 ---
 
@@ -310,6 +311,18 @@ Réalisé et commité sur `C:\mep-rcc` (+ sauvegarde Q:), `tsc` OK. Commits `6dd
 **Restes neutres** : projet **26034 (RPA Richelieu)** = aucune ligne QB (client « à confirmer », honoraires 0). Employés sans heures projet : Benjamin Allard, David Lajeunesse (gicleurs).
 
 **Pour réimporter** (ex. nouveaux CSV) : `node --env-file=.env --import tsx prisma/import-qb-extend.ts` puis `…import-qb-fees.ts` puis `…import-qb-hours.ts`.
+
+---
+
+## 15. SESSION 2026-06-23 — Tableau de bord Direction (Phase B)
+
+Commits `0f046c2` (dashboard) + `6db5aaf` (maj HANDOFF). `tsc` OK, `/direction` HTTP 200 authentifié, vérifié avec données réelles.
+
+- **Migration `add_actual_cost`** : `Project.actualCost` (Float, défaut 0) = coûts réels QB. `import-qb-fees.ts` importe désormais la colonne **Coûts** (en plus de Revenus).
+- **`src/lib/queries.ts` → `getDirectionData()`** : financier réalisé (Σ honoraires 1,41 M$, Σ coûts 0,92 M$, profit 0,49 M$, **marge globale 34,7 %**, 11 projets sous cible 30 %, 7 en perte), ressources (capacité, heures réelles, **utilisation réalisée ~69 %**, facturable), charge par discipline (heures réelles), rentabilité par projet (meilleurs/pires).
+- **Page `src/app/(app)/direction/page.tsx`** + entrée nav « Direction ». Rendu serveur, pas de graphe client (v1).
+- ⚠️ **Caveat affiché** : marge sur **coûts directs**, avant frais généraux firme (l'État des résultats QB, overhead inclus, est négatif).
+- **Volet « projeté » (EAC $, marge projetée) omis volontairement** : bloqué sur `costRate = 0` (placeholder). Le débloquer = saisir/importer les vrais taux chargés (question §9.1).
 
 ---
 *Fin du document de transition. Tout le code est sur `C:\mep-rcc` (exécutable, git) avec sauvegarde sur `Q:\…\mep-resource-command-center`.*
