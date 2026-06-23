@@ -2,7 +2,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { NAV_ITEMS, titleForPath } from "./nav-items";
 import { USER_ROLE_LABELS } from "@/lib/labels";
 import { Avatar } from "@/components/ui/avatar";
@@ -35,13 +35,15 @@ export function Shell({
     .toUpperCase();
 
   const Brand = () => (
-    <Link href="/dashboard" className="flex items-center gap-2.5">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-        <Building2 className="size-5" />
-      </span>
-      <span className="leading-tight">
-        <span className="block text-sm font-bold text-sidebar-foreground">Experts MEP</span>
-        <span className="block text-xs text-sidebar-foreground/60">Command Center</span>
+    <Link href="/dashboard" className="block" title="MEP Experts Conseils — Command Center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/logo-mep.png"
+        alt="MEP Experts Conseils"
+        className="w-full rounded-lg ring-1 ring-sidebar-border"
+      />
+      <span className="mt-2 block px-1 text-xs text-sidebar-foreground/60">
+        Resource Command Center
       </span>
     </Link>
   );

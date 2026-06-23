@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { Building2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { loginAction } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,11 +12,10 @@ export function LoginForm() {
 
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader className="items-center space-y-2 text-center">
-        <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-          <Building2 className="size-6" />
-        </div>
-        <CardTitle className="text-xl">MEP Resource Command Center</CardTitle>
+      <CardHeader className="items-center space-y-3 text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-mep.png" alt="MEP Experts Conseils" className="mx-auto w-48 rounded-lg" />
+        <CardTitle className="text-lg">Resource Command Center</CardTitle>
         <CardDescription>Connectez-vous pour accéder au tableau de bord</CardDescription>
       </CardHeader>
       <CardContent>

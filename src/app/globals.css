@@ -4,6 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Charte MEP Experts Conseils : marine profond #13243F + or #C2A14E */
+  --brand-navy: #13243f;
+  --brand-navy-soft: #1f3658;
+  --brand-gold: #c2a14e;
+  --brand-gold-soft: #d8be84;
+
   --radius: 0.625rem;
   --background: oklch(0.985 0.002 247.839);
   --foreground: oklch(0.129 0.042 264.695);
@@ -11,31 +17,31 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
+  --primary: var(--brand-navy);
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --secondary-foreground: var(--brand-navy);
   --muted: oklch(0.968 0.007 247.896);
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --accent: #f4eddc;
+  --accent-foreground: var(--brand-navy);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.208 0.042 265.755);
+  --ring: var(--brand-gold);
+  --chart-1: #c2a14e;
+  --chart-2: #13243f;
+  --chart-3: #1f3658;
+  --chart-4: #d8be84;
+  --chart-5: oklch(0.6 0.118 184.704);
+  --sidebar: var(--brand-navy);
   --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.929 0.013 255.508);
-  --sidebar-primary-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-primary: var(--brand-gold);
+  --sidebar-primary-foreground: var(--brand-navy);
+  --sidebar-accent: var(--brand-navy-soft);
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(0.279 0.041 260.031);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar-border: var(--brand-navy-soft);
+  --sidebar-ring: var(--brand-gold);
 }
 
 .dark {
