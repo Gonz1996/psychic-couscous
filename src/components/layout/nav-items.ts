@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  Landmark,
   Users,
   FolderKanban,
   Contact,
@@ -19,6 +20,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/direction", label: "Direction", icon: Landmark },
   { href: "/employes", label: "Employés", icon: Users },
   { href: "/projets", label: "Projets", icon: FolderKanban },
   { href: "/clients", label: "Clients", icon: Contact },

@@ -135,6 +135,7 @@ model Project {
   status          ProjectStatus @default(ACTIVE)
   budgetHours     Float // Budget d'heures
   budgetFees      Float // Budget d'honoraires total ($)
+  actualCost      Float         @default(0) // Coûts réels à ce jour (QuickBooks) ($)
   feeDesign       Float         @default(0) // Honoraires conception ($)
   feeSupervision  Float         @default(0) // Honoraires surveillance ($)
   targetProfitPct Int           @default(30) // Profit cible (%)

@@ -63,8 +63,8 @@ async function main() {
   const headerIdx = rows.findIndex((r) => r[0]?.trim() === "Projet");
   if (headerIdx < 0) throw new Error("En-tête 'Projet' introuvable dans le CSV.");
 
-  // number -> { client, revenus } (lignes projet uniquement = préfixe 5 chiffres).
-  const byNumber = new Map<string, { client: string; revenus: number }>();
+  // number -> { client, revenus, couts } (lignes projet uniquement = préfixe 5 chiffres).
+  const byNumber = new Map<string, { client: string; revenus: number; couts: number }>();
   for (let i = headerIdx + 1; i < rows.length; i++) {
     const r = rows[i];
     const projet = (r[0] || "").trim();
@@ -73,9 +73,10 @@ async function main() {
     const number = m[1];
     const client = (r[1] || "").trim();
     const revenus = toNum(r[2]);
+    const couts = toNum(r[3]);
     // En cas de doublon de numéro, garder la ligne au plus gros revenu.
     const prev = byNumber.get(number);
-    if (!prev || revenus > prev.revenus) byNumber.set(number, { client, revenus });
+    if (!prev || revenus > prev.revenus) byNumber.set(number, { client, revenus, couts });
   }
 
   const projects = await prisma.project.findMany({
@@ -109,10 +110,12 @@ async function main() {
         budgetFees: hit.revenus,
         feeDesign: hit.revenus,
         feeSupervision: 0,
+        actualCost: hit.couts,
         clientId,
       },
     });
-    matched.push(`${p.number}  ${hit.revenus.toLocaleString("fr-CA")} $  →  ${hit.client}  (${p.name})`);
+    const marge = hit.revenus > 0 ? ((hit.revenus - hit.couts) / hit.revenus) * 100 : 0;
+    matched.push(`${p.number}  ${hit.revenus.toLocaleString("fr-CA")} $ − ${hit.couts.toLocaleString("fr-CA")} $  =  ${marge.toFixed(0)}%  ${hit.client}`);
   }
 
   // Nettoyage : supprimer les clients orphelins (0 projet), SAUF « Client à confirmer ».

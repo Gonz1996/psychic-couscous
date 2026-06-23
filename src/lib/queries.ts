@@ -281,3 +281,116 @@ export async function getDashboardData() {
 }
 
 export type DashboardData = Awaited<ReturnType<typeof getDashboardData>>;
+
+// =====================================================================
+// Tableau de bord DIRECTION — vue financière + ressources, alimentée par
+// les vraies données importées (QuickBooks : honoraires, coûts réels ;
+// TimeEntry : heures réelles). Volet « réalisé » uniquement — le « projeté »
+// (EAC en $) nécessite les taux horaires chargés (placeholder = 0 $).
+// =====================================================================
+
+export const TARGET_MARGIN_PCT = 30;
+
+export interface DirectionProjectRow {
+  id: string;
+  number: string;
+  name: string;
+  client: string;
+  fees: number;
+  cost: number;
+  profit: number;
+  marginPct: number;
+}
+
+export async function getDirectionData() {
+  const [projects, employees, timeEntries] = await Promise.all([
+    prisma.project.findMany({
+      select: {
+        id: true, number: true, name: true, status: true,
+        budgetFees: true, actualCost: true,
+        client: { select: { name: true } },
+      },
+      orderBy: { number: "asc" },
+    }),
+    prisma.employee.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, weeklyCapacityHours: true, discipline: { select: { name: true, color: true } } },
+    }),
+    prisma.timeEntry.findMany({
+      select: { weekStart: true, hours: true, billable: true, employee: { select: { discipline: { select: { name: true } } } } },
+    }),
+  ]);
+
+  // -------------------- Financier (réalisé, cumulatif QB) --------------------
+  const withFees = projects.filter((p) => p.budgetFees > 0);
+  const totalFees = withFees.reduce((s, p) => s + p.budgetFees, 0);
+  const totalCost = withFees.reduce((s, p) => s + p.actualCost, 0);
+  const totalProfit = totalFees - totalCost;
+  const globalMarginPct = totalFees > 0 ? (totalProfit / totalFees) * 100 : 0;
+
+  const projectRows: DirectionProjectRow[] = withFees
+    .map((p) => {
+      const profit = p.budgetFees - p.actualCost;
+      return {
+        id: p.id, number: p.number, name: p.name, client: p.client.name,
+        fees: p.budgetFees, cost: p.actualCost, profit,
+        marginPct: p.budgetFees > 0 ? (profit / p.budgetFees) * 100 : 0,
+      };
+    })
+    .sort((a, b) => b.marginPct - a.marginPct);
+
+  const belowTarget = projectRows.filter((p) => p.marginPct < TARGET_MARGIN_PCT);
+  const atLoss = projectRows.filter((p) => p.profit < 0);
+
+  // -------------------- Ressources (réalisé, heures TimeEntry) ----------------
+  const totalActualHours = timeEntries.reduce((s, t) => s + t.hours, 0);
+  const billableHours = timeEntries.filter((t) => t.billable !== false).reduce((s, t) => s + t.hours, 0);
+  const weekKeys = new Set(timeEntries.map((t) => weekKey(t.weekStart)));
+  const numWeeks = Math.max(1, weekKeys.size);
+  const weeklyCapacity = employees.reduce((s, e) => s + e.weeklyCapacityHours, 0);
+  const periodCapacity = weeklyCapacity * numWeeks;
+  const realizedUtilizationPct = periodCapacity > 0 ? (totalActualHours / periodCapacity) * 100 : 0;
+  const billablePct = totalActualHours > 0 ? (billableHours / totalActualHours) * 100 : 0;
+
+  // -------------------- Par discipline (heures réelles) -----------------------
+  const discMap = new Map<string, { discipline: string; color: string; hours: number; headcount: number }>();
+  for (const e of employees) {
+    const k = e.discipline.name;
+    const cur = discMap.get(k) ?? { discipline: k, color: e.discipline.color, hours: 0, headcount: 0 };
+    cur.headcount += 1;
+    discMap.set(k, cur);
+  }
+  for (const t of timeEntries) {
+    const k = t.employee.discipline.name;
+    const cur = discMap.get(k) ?? { discipline: k, color: "#64748b", hours: 0, headcount: 0 };
+    cur.hours += t.hours;
+    discMap.set(k, cur);
+  }
+  const byDiscipline = [...discMap.values()]
+    .map((d) => ({ ...d, hours: Math.round(d.hours), sharePct: totalActualHours > 0 ? (d.hours / totalActualHours) * 100 : 0 }))
+    .sort((a, b) => b.hours - a.hours);
+
+  return {
+    financials: {
+      totalFees, totalCost, totalProfit, globalMarginPct,
+      targetMarginPct: TARGET_MARGIN_PCT,
+      projectsWithFees: withFees.length,
+      belowTargetCount: belowTarget.length,
+      atLossCount: atLoss.length,
+    },
+    resources: {
+      headcount: employees.length,
+      weeklyCapacity: Math.round(weeklyCapacity),
+      totalActualHours: Math.round(totalActualHours),
+      numWeeks,
+      realizedUtilizationPct,
+      billablePct,
+    },
+    byDiscipline,
+    topProjects: projectRows.slice(0, 6),
+    bottomProjects: projectRows.slice(-6).reverse(),
+    allProjects: projectRows,
+  };
+}
+
+export type DirectionData = Awaited<ReturnType<typeof getDirectionData>>;

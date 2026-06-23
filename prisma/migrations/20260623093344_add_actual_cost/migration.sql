@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Project" ADD COLUMN     "actualCost" DOUBLE PRECISION NOT NULL DEFAULT 0;
