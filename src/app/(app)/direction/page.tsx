@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Wallet, TrendingDown, PiggyBank, Percent, Users, Clock, Activity, BadgeCheck, Info } from "lucide-react";
-import { getDirectionData } from "@/lib/queries";
+import { Wallet, TrendingDown, PiggyBank, Percent, Users, Clock, Activity, BadgeCheck, Info, Building2, Scale, Receipt, Banknote } from "lucide-react";
+import { getDirectionData, getFirmFinance } from "@/lib/queries";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/rbac";
 import { fmtCurrency, fmtCurrencyCompact, fmtHours, fmtInt, fmtPct } from "@/lib/format";
 import { PageHeader } from "@/components/shared/page-header";
 import { KpiCard } from "@/components/shared/kpi-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FirmFinanceForm } from "@/components/direction/firm-finance-form";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +20,10 @@ function marginTone(pct: number): "good" | "warn" | "danger" {
 const MARGIN_TEXT = { good: "text-emerald-600", warn: "text-amber-600", danger: "text-red-600" } as const;
 
 export default async function DirectionPage() {
-  const d = await getDirectionData();
+  const [d, firm, session] = await Promise.all([getDirectionData(), getFirmFinance(), auth()]);
   const f = d.financials;
   const r = d.resources;
+  const writable = canWrite(session?.user?.role);
   const maxDiscHours = Math.max(1, ...d.byDiscipline.map((x) => x.hours));
 
   return (
@@ -29,10 +33,23 @@ export default async function DirectionPage() {
         description="Performance financière et ressources — données réelles (QuickBooks + heures saisies)."
       />
 
-      {/* ----------------------------- Financier ----------------------------- */}
+      {/* --------------------- Firme — vue d'ensemble ------------------------ */}
       <section className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Financier — réalisé à ce jour
+          Firme — vue d&apos;ensemble ({firm.periodLabel})
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <KpiCard label="Revenu firme total" value={fmtCurrencyCompact(firm.totalRevenue)} icon={Building2} sub="chiffre d'affaires réel (QuickBooks)" />
+          <KpiCard label="Résultat net" value={fmtCurrencyCompact(firm.netResult)} icon={Scale} tone={firm.netResult >= 0 ? "good" : "danger"} sub="revenu − dépenses, overhead inclus" />
+          <KpiCard label="Obligations fiscales" value={fmtCurrencyCompact(firm.totalObligations)} icon={Receipt} tone={firm.totalObligations > 0 ? "warn" : "default"} sub="TPS · TVQ · DAS · pénalités à remettre" />
+          <KpiCard label="Net après obligations" value={fmtCurrencyCompact(firm.afterObligations)} icon={Banknote} tone={firm.afterObligations >= 0 ? "good" : "danger"} sub="résultat net − obligations" />
+        </div>
+      </section>
+
+      {/* ----------------------------- Financier projets --------------------- */}
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Projets — rentabilité réalisée à ce jour
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard label="Honoraires totaux" value={fmtCurrencyCompact(f.totalFees)} icon={Wallet} sub={`${fmtInt(f.projectsWithFees)} projets facturés`} />
@@ -113,6 +130,19 @@ export default async function DirectionPage() {
         </CardHeader>
         <CardContent className="p-0">
           <ProjectMarginList rows={d.bottomProjects} />
+        </CardContent>
+      </Card>
+
+      {/* ----------------- Vue firme & obligations (éditable) --------------- */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Vue firme &amp; obligations fiscales</CardTitle>
+          <CardDescription>
+            Revenu/dépenses firme (snapshot QuickBooks) et taxes dues au gouvernement (TPS, TVQ, DAS) avec pénalités — à tenir à jour par la direction.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FirmFinanceForm firm={firm} canWrite={writable} />
         </CardContent>
       </Card>
     </div>

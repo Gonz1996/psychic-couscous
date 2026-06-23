@@ -394,3 +394,34 @@ export async function getDirectionData() {
 }
 
 export type DirectionData = Awaited<ReturnType<typeof getDirectionData>>;
+
+// --------- Finances firme (vue firme + obligations fiscales) ---------
+// Valeurs par défaut = snapshot QuickBooks (État des résultats sept. 2025 –
+// juin 2026). Persistées dès la première sauvegarde par la direction.
+
+export const FIRM_DEFAULTS = {
+  periodLabel: "Exercice sept. 2025 – juin 2026",
+  totalRevenue: 1_576_802.6,
+  totalExpenses: 1_635_995.12,
+};
+
+export async function getFirmFinance() {
+  const rec = await prisma.firmFinance.findUnique({ where: { id: "singleton" } });
+  const f = {
+    periodLabel: rec?.periodLabel ?? FIRM_DEFAULTS.periodLabel,
+    totalRevenue: rec?.totalRevenue ?? FIRM_DEFAULTS.totalRevenue,
+    totalExpenses: rec?.totalExpenses ?? FIRM_DEFAULTS.totalExpenses,
+    gstOwed: rec?.gstOwed ?? 0,
+    qstOwed: rec?.qstOwed ?? 0,
+    sourceDeductionsOwed: rec?.sourceDeductionsOwed ?? 0,
+    penaltiesOwed: rec?.penaltiesOwed ?? 0,
+    note: rec?.note ?? null,
+    updatedAt: rec?.updatedAt ?? null,
+    saved: !!rec,
+  };
+  const netResult = f.totalRevenue - f.totalExpenses;
+  const totalObligations = f.gstOwed + f.qstOwed + f.sourceDeductionsOwed + f.penaltiesOwed;
+  return { ...f, netResult, totalObligations, afterObligations: netResult - totalObligations };
+}
+
+export type FirmFinance = Awaited<ReturnType<typeof getFirmFinance>>;

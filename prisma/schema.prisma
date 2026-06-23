@@ -240,6 +240,27 @@ model Absence {
 // ------------------------ Authentification ---------------------------
 // Utilisé par NextAuth (Credentials + JWT). Lié optionnellement à un employé.
 
+// ------------------ Finances firme (singleton) ----------------------
+// Vue de direction : revenu/dépenses firme (snapshot QuickBooks – État des
+// résultats) + obligations fiscales à remettre au gouvernement (saisies par
+// la direction, car non extractibles de façon fiable des exports QB).
+
+model FirmFinance {
+  id            String @id @default("singleton")
+  periodLabel   String @default("Exercice en cours")
+  totalRevenue  Float  @default(0) // Revenu firme total ($)
+  totalExpenses Float  @default(0) // Dépenses firme totales ($)
+
+  // Obligations fiscales à remettre (TPS/TVQ/DAS) + pénalités/intérêts
+  gstOwed              Float @default(0) // TPS à remettre ($)
+  qstOwed              Float @default(0) // TVQ à remettre ($)
+  sourceDeductionsOwed Float @default(0) // DAS / retenues à la source ($)
+  penaltiesOwed        Float @default(0) // Pénalités et intérêts ($)
+
+  note      String?
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
