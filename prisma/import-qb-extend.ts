@@ -34,6 +34,7 @@ function parseCsv(text: string): string[][] {
   return rows;
 }
 const read = (p: string) => parseCsv(fs.readFileSync(p, "utf-8").replace(/^﻿/, ""));
+const toNumLocal = (s: string) => Number((s || "").replace(/[",\s]/g, "")) || 0;
 const stripNumPrefix = (s: string) => s.replace(/^\d{5}\s*-?\s*/, "").trim();
 
 async function main() {
@@ -77,15 +78,23 @@ async function main() {
 
   // Timesheet : numéros ayant des heures (>0).
   const hoursRows = read(HOURS_CSV);
-  const numbersWithHours = new Set<string>();
+  const numbersToCreate = new Set<string>();
   for (const r of hoursRows) {
     const date = (r[1] || "").trim();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
     const dur = (r[5] || "").trim();
     if (!/^\d+:\d{2}$/.test(dur) || dur === "00:00") continue;
     const m = (r[7] || "").trim().match(/^(\d{5})/);
-    if (m) numbersWithHours.add(m[1]);
+    if (m) numbersToCreate.add(m[1]);
   }
+  // + numéros AVEC revenus dans le rapport de rentabilité (projets facturés
+  //   sans heures saisies → sinon leurs revenus manquent au total firme).
+  const feesRev = new Map<string, number>();
+  for (let i = feeHeader + 1; i < feesRows.length; i++) {
+    const m = (feesRows[i][0] || "").trim().match(/^(\d{5})/);
+    if (m) feesRev.set(m[1], toNumLocal(feesRows[i][2]));
+  }
+  for (const [num, rev] of feesRev) if (rev > 0) numbersToCreate.add(num);
 
   const existing = new Set((await prisma.project.findMany({ select: { number: true } })).map((p) => p.number));
   const tbd = await prisma.client.findFirst({ where: { code: "TBD" }, select: { id: true } });
@@ -94,7 +103,7 @@ async function main() {
   const endDefault = new Date(today); endDefault.setFullYear(endDefault.getFullYear() + 1);
 
   const created: string[] = [];
-  for (const number of [...numbersWithHours].sort()) {
+  for (const number of [...numbersToCreate].sort()) {
     if (existing.has(number)) continue;
     const info = meta.get(number);
     const name = info?.name || `Projet ${number}`;
