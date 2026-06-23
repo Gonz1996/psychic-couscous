@@ -44,6 +44,12 @@ function parseCsv(text: string): string[][] {
 const norm = (s: string) =>
   (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
 
+/* Alias de noms du timesheet → nom canonique en base (confirmés avec le client).
+ * Les noms du timesheet diffèrent parfois du nom court enregistré. */
+const EMPLOYEE_ALIASES: Record<string, string> = {
+  "cristhian alonso garzon hoyos": "Cristhian Garzon",
+};
+
 /** Lundi 00:00 UTC de la semaine contenant `input` (copie de lib/dates). */
 function weekStartUTC(input: string): Date {
   const d = new Date(input);
@@ -91,7 +97,8 @@ async function main() {
     if (c0 && !isActivity) {
       if (c0 === "Date de l’activité" || c0 === "MEP Experts Conseils") continue;
       currentEmpName = c0;
-      currentEmpId = empByName.get(norm(c0)) ?? null;
+      const canonical = EMPLOYEE_ALIASES[norm(c0)];
+      currentEmpId = empByName.get(norm(canonical ?? c0)) ?? null;
       continue;
     }
     if (!isActivity) continue;
