@@ -62,10 +62,12 @@ model Discipline {
   name      String     @unique // Électricité, Mécanique/CVAC, Plomberie...
   code      String     @unique // ELEC, MECA, PLOM, PROT, CTRL
   color     String     @default("#64748b") // Couleur pour les graphiques
-  employees Employee[]
-  projects  Project[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  employees          Employee[]
+  projects           Project[]
+  projectDisciplines ProjectDiscipline[]
+  staffings          ProjectStaffing[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 // ----------------------------- Employés ------------------------------
@@ -81,8 +83,9 @@ model Employee {
   hireDate            DateTime
   weeklyCapacityHours Float          @default(37.5) // Capacité hebdomadaire
   billableTargetPct   Int            @default(80) // Cible de facturation %
-  costRate            Float          @default(0) // Coût horaire interne ($)
+  costRate            Float          @default(0) // Coût horaire interne chargé ($/h)
   billRate            Float          @default(0) // Taux facturable ($)
+  productivityFactor  Float          @default(1.0) // Facteur de productivité
 
   disciplineId String
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
@@ -97,7 +100,9 @@ model Employee {
   allocations     Allocation[]
   timeEntries     TimeEntry[]
   absences        Absence[]
-  managedProjects Project[]    @relation("ProjectManager")
+  managedProjects  Project[]         @relation("ProjectManager")
+  directedProjects Project[]         @relation("ProjectDirector")
+  staffings        ProjectStaffing[]
 
   user User?
 
@@ -129,7 +134,12 @@ model Project {
   name            String
   status          ProjectStatus @default(ACTIVE)
   budgetHours     Float // Budget d'heures
-  budgetFees      Float // Budget d'honoraires ($)
+  budgetFees      Float // Budget d'honoraires total ($)
+  feeDesign       Float         @default(0) // Honoraires conception ($)
+  feeSupervision  Float         @default(0) // Honoraires surveillance ($)
+  targetProfitPct Int           @default(30) // Profit cible (%)
+  overheadPct     Int           @default(10) // Frais généraux (%)
+  riskReservePct  Int           @default(5) // Réserve de risque (%)
   percentComplete Int           @default(0) // Avancement % (saisi par le CP)
   startDate       DateTime
   endDate         DateTime
@@ -144,8 +154,14 @@ model Project {
   projectManagerId String
   projectManager   Employee @relation("ProjectManager", fields: [projectManagerId], references: [id])
 
-  allocations Allocation[]
-  timeEntries TimeEntry[]
+  // Directeur (optionnel)
+  directorId String?
+  director   Employee? @relation("ProjectDirector", fields: [directorId], references: [id])
+
+  allocations        Allocation[]
+  timeEntries        TimeEntry[]
+  projectDisciplines ProjectDiscipline[]
+  staffings          ProjectStaffing[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -153,6 +169,7 @@ model Project {
   @@index([clientId])
   @@index([disciplineId])
   @@index([projectManagerId])
+  @@index([directorId])
   @@index([status])
 }
 
@@ -235,3 +252,41 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// -------------- Planification financière (Phase A) -------------------
+// Répartition de l'effort par discipline (sur le budget de production),
+// puis par employé à l'intérieur de chaque discipline.
+
+model ProjectDiscipline {
+  id           String     @id @default(cuid())
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  effortPct    Float // % de l'effort du budget de production
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, disciplineId])
+  @@index([projectId])
+}
+
+model ProjectStaffing {
+  id           String     @id @default(cuid())
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  employeeId   String
+  employee     Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  effortPct    Float // % de l'effort de la discipline attribué à cet employé
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, disciplineId, employeeId])
+  @@index([projectId])
+  @@index([employeeId])
+}
+

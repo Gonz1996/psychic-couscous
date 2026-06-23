@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Calculator, Pencil } from "lucide-react";
 import { auth } from "@/auth";
 import { canWrite } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
@@ -94,6 +94,13 @@ export default async function ProjetDetailPage({ params }: { params: Promise<{ i
           <Button asChild variant="outline" size="sm">
             <Link href={`/projets/${p.id}/modifier`}>
               <Pencil className="size-4" /> Modifier
+            </Link>
+          </Button>
+        )}
+        {writable && (
+          <Button asChild size="sm">
+            <Link href={`/projets/${p.id}/planification`}>
+              <Calculator className="size-4" /> Planification
             </Link>
           </Button>
         )}

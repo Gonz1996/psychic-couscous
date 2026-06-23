@@ -110,13 +110,15 @@ export function Shell({
           </Button>
           <h2 className="text-sm font-semibold sm:text-base">{title}</h2>
           <div className="ml-auto flex items-center gap-3">
-            <div className="hidden text-right sm:block">
-              <div className="text-sm font-medium leading-tight">{user.name}</div>
-              <div className="text-xs text-muted-foreground">
-                {user.role ? (USER_ROLE_LABELS[user.role] ?? user.role) : ""}
+            <Link href="/compte" className="flex items-center gap-3 rounded-md transition-opacity hover:opacity-80" title="Mon compte">
+              <div className="hidden text-right sm:block">
+                <div className="text-sm font-medium leading-tight">{user.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {user.role ? (USER_ROLE_LABELS[user.role] ?? user.role) : ""}
+                </div>
               </div>
-            </div>
-            <Avatar initials={initials} />
+              <Avatar initials={initials} />
+            </Link>
             <form action={signOutAction}>
               <Button variant="ghost" size="icon" type="submit" title="Se déconnecter">
                 <LogOut />

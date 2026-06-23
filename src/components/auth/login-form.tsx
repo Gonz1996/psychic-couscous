@@ -23,20 +23,17 @@ export function LoginForm() {
         <form action={action} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="email">Courriel</Label>
-            <Input id="email" name="email" type="email" defaultValue="admin@expertsmep.com" required />
+            <Input id="email" name="email" type="email" defaultValue="cgarzon@expertsmep.com" required />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" name="password" type="password" defaultValue="demo1234" required />
+            <Input id="password" name="password" type="password" required />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" className="w-full" disabled={pending}>
             {pending && <Loader2 className="size-4 animate-spin" />}
             Se connecter
           </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            Démo : admin@expertsmep.com / demo1234
-          </p>
         </form>
       </CardContent>
     </Card>
