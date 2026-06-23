@@ -288,8 +288,9 @@ Exemple spec : Honoraires 100 000 $, profit 30 %, frais 10 %, réserve 5 % → *
 2. ~~**Phase B — Tableau de bord Direction**~~ ✅ **fait** (2026-06-23, §15) : page `/direction`, financier réalisé (honoraires/coûts/profit/marge globale 34,7 %) + ressources + rentabilité par projet.
 3. ~~Réconciliation revenus~~ ✅ + ~~Branding MEP~~ ✅ + ~~Vue firme & obligations fiscales~~ ✅ + ~~seuils 85/100/115~~ ✅ + ~~taux chargés (dérivés paie)~~ ✅ (2026-06-23, §16).
 4. ~~Génération d'affectations par courbe~~ ✅ **fait** (2026-06-23, §17). **Phase B complète.**
-5. **Phase C** : module **Simulation** (« et si » sans enregistrer, réutilise `finance.ts` pur côté client) + **copilote IA** (étendre `/ia`, brancher `@anthropic-ai/sdk`).
-6. Transverses (§8) : feedback ergonomie planif, **vraies dates/% projets** (les affectations générées sont sur des dates placeholder), valider les **taux chargés estimés**, UI disciplines, admin utilisateurs, montants Decimal, déploiement Vercel.
+5. ~~Phase C : Simulation~~ ✅ + ~~copilote IA~~ ✅ **faits** (2026-06-23, §18). **MVP + Phases A/B/C terminés.**
+6. Transverses (§8) : **timesheet complet** (l'export ne couvre que jan-juin 2026 ; le client doit ré-exporter depuis le début des projets), **vraies dates/% projets**, valider les **taux chargés estimés** + le **fee split conception/surveillance**, UI gestion disciplines, admin utilisateurs, montants Decimal, déploiement Vercel.
+7. Optionnel : ajouter `ANTHROPIC_API_KEY` au `.env` pour passer le copilote `/ia` de règles → Claude live (auto-détecté).
 
 ---
 
@@ -348,6 +349,18 @@ Commit `891a1b6`. `tsc` OK, vérifié de bout en bout. **Phase B complète.**
 - **Éditeur de planif** : sélecteur de courbe + bouton « Générer les affectations » (agit sur le plan **enregistré**).
 - **Démo** : projet **24109** doté d'un plan (Méca 50 / Élec 30 / Coord 20) + 162 `Allocation` sur 54 sem. → visible dans `/capacite` et le dashboard. Régénérable/effaçable via l'éditeur.
 - ⚠️ Dates projets = placeholder → affectations étalées sur ~1 an fictif. Saisir les vraies dates pour un échéancier réel.
+
+---
+
+## 18. SESSION 2026-06-23 — Phase C (Simulation + copilote IA), phase projets
+
+Commits `0759c22` (phase conception/surveillance), `3bea50c` (simulation), `d31f02a` (copilote IA). `tsc` OK, vérifié, synchronisé Q:.
+
+- **Phase Conception/Surveillance** (§ demande client) : `Project.inConception`/`inSurveillance` classés depuis les fichiers de suivi sur **O:** (lisibles avec `py`+openpyxl). Éditable (cases à cocher formulaire projet), badges + filtre dans la liste. 16 conception / 17 surveillance / 2 les deux / 32 non spécifiés.
+- **Module Simulation** (`/simulation`) : `getDisciplineCapacity()` + `MandateSimulator` — « puis-je accepter ce mandat ? » : honoraires/durée/répartition → budget prod, heures, occupation/discipline (seuils), verdict faisabilité. Réutilise `finance.ts`/`thresholds.ts` purs. Rien enregistré.
+- **Copilote IA** (`/ia`) : `answerQuestion` répond aux questions finances/capacité/mandat/rentabilité ; contexte + snapshot Claude enrichis (firm, disciplines, marge réelle, phase, taux). ⚠️ `ANTHROPIC_API_KEY` vide → mode **règles** ; ajouter une clé = Claude live auto.
+- **Édition dans localhost** (demande client) : confirmé — tout est éditable dans l'app (projets/employés/taux/phase/dates, finances firme/taxes, planif, saisie). Lancer avec `Demarrer-MEP.bat`.
+- ⚠️ **Heures** : l'export timesheet ne couvre que **jan-juin 2026** ; le client doit ré-exporter depuis le début de chaque projet (certains = 2024) pour réconcilier les heures avec les coûts QB.
 
 ---
 *Fin du document de transition. Tout le code est sur `C:\mep-rcc` (exécutable, git) avec sauvegarde sur `Q:\…\mep-resource-command-center`.*
