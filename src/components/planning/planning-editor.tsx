@@ -1,9 +1,10 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, Save, Trash2 } from "lucide-react";
+import { CalendarClock, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { computePlan, type FinancialParams } from "@/lib/finance";
-import { saveProjectPlan, type PlanPayload } from "@/lib/actions/planning";
+import { saveProjectPlan, generateAllocations, type PlanPayload, type GenerateResult } from "@/lib/actions/planning";
+import { CURVE_LABELS, type LoadCurve } from "@/lib/scheduling";
 import { fmtCurrency, fmtHours } from "@/lib/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,9 @@ export function PlanningEditor({
   const [staff, setStaff] = React.useState(initial.staffing);
   const [saving, setSaving] = React.useState(false);
   const [msg, setMsg] = React.useState<{ ok: boolean; text: string } | null>(null);
+  const [curve, setCurve] = React.useState<LoadCurve>("uniform");
+  const [generating, setGenerating] = React.useState(false);
+  const [genMsg, setGenMsg] = React.useState<{ ok: boolean; text: string } | null>(null);
 
   const discName = (id: string) => disciplines.find((d) => d.id === id)?.name ?? id;
   const fees = (feeDesign || 0) + (feeSupervision || 0);
@@ -109,6 +113,22 @@ export function PlanningEditor({
       router.refresh();
     } else {
       setMsg({ ok: false, text: res.error ?? "Erreur." });
+    }
+  }
+
+  async function generate() {
+    setGenerating(true);
+    setGenMsg(null);
+    const res: GenerateResult = await generateAllocations(projectId, curve);
+    setGenerating(false);
+    if (res.ok) {
+      setGenMsg({
+        ok: true,
+        text: `${res.count} affectations générées (${res.totalHours} h · ${res.employees} employés · ${res.weeks} semaines).`,
+      });
+      router.refresh();
+    } else {
+      setGenMsg({ ok: false, text: res.error ?? "Erreur." });
     }
   }
 
@@ -264,6 +284,31 @@ export function PlanningEditor({
               Enregistrer le plan
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Génération des affectations hebdomadaires */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Générer les affectations</CardTitle>
+          <CardDescription>
+            Étale les heures ajustées du <strong>plan enregistré</strong> sur les semaines du projet selon une courbe de charge. Remplace les affectations existantes de ce projet.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-end gap-3">
+          <div className="space-y-1.5">
+            <Label>Courbe de charge</Label>
+            <select value={curve} onChange={(e) => setCurve(e.target.value as LoadCurve)} className={cn(SELECT, "w-64")}>
+              {(Object.keys(CURVE_LABELS) as LoadCurve[]).map((c) => (
+                <option key={c} value={c}>{CURVE_LABELS[c]}</option>
+              ))}
+            </select>
+          </div>
+          <Button variant="secondary" onClick={generate} disabled={generating}>
+            {generating ? <Loader2 className="size-4 animate-spin" /> : <CalendarClock className="size-4" />}
+            Générer les affectations
+          </Button>
+          {genMsg && <span className={cn("text-sm", genMsg.ok ? "text-emerald-600" : "text-destructive")}>{genMsg.text}</span>}
         </CardContent>
       </Card>
     </div>
