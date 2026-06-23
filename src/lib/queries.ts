@@ -224,7 +224,7 @@ export async function getDashboardData() {
   const avgUtilization = totalCapacity > 0 ? (totalAllocated / totalCapacity) * 100 : 0;
   const overloaded = rosterNow.filter((r) => r.metrics.utilizationPct > 100);
   const available = rosterNow.filter((r) => r.metrics.utilizationPct < 85 && r.metrics.remainingHours > 1);
-  const critical = rosterNow.filter((r) => r.metrics.utilizationPct > 110);
+  const critical = rosterNow.filter((r) => r.metrics.utilizationPct > 115);
 
   const activeProjects = projectRows.filter((p) => ["ACTIVE", "PLANNING", "ON_HOLD"].includes(p.project.status));
   const lateProjects = projectRows.filter((p) => p.flags.includes("BEHIND_SCHEDULE"));

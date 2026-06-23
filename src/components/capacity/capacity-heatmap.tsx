@@ -16,7 +16,7 @@ export function CapacityHeatmap({ matrix }: { matrix: CapacityMatrixDTO }) {
       <CardHeader>
         <CardTitle>Heatmap de charge — 12 semaines</CardTitle>
         <CardDescription>
-          Utilisation par employé et par semaine (vert &lt; 85 %, jaune 85–100 %, orange 100–110 %, rouge &gt; 110 %)
+          Utilisation par employé et par semaine (vert &lt; 85 %, jaune 85–100 %, orange 100–115 %, rouge &gt; 115 %)
         </CardDescription>
       </CardHeader>
       <CardContent>

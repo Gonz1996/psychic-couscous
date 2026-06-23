@@ -1,8 +1,8 @@
-// Seuils de couleur d'utilisation (indicateurs visuels).
+// Seuils de couleur d'occupation/utilisation (indicateurs visuels).
 //   VERT   : 0 à 85 %      → capacité disponible
 //   JAUNE  : 85 à 100 %    → charge optimale
-//   ORANGE : 100 à 110 %   → en surcharge
-//   ROUGE  : > 110 %       → surcharge critique
+//   ORANGE : 100 à 115 %   → en surcharge
+//   ROUGE  : > 115 %       → surcharge critique
 
 export type RagBand = "green" | "yellow" | "orange" | "red";
 
@@ -62,7 +62,7 @@ export const BAND_STYLES: Record<RagBand, BandStyle> = {
 
 /** Bande de couleur pour un % d'utilisation. */
 export function utilizationBand(pct: number): RagBand {
-  if (pct > 110) return "red";
+  if (pct > 115) return "red";
   if (pct > 100) return "orange";
   if (pct >= 85) return "yellow";
   return "green";
@@ -77,7 +77,7 @@ export const THRESHOLDS = {
   /** Au-delà : employé surchargé. */
   OVERLOAD_PCT: 100,
   /** Au-delà : surcharge critique (rouge). */
-  CRITICAL_PCT: 110,
+  CRITICAL_PCT: 115,
   /** En deçà : employé sous-utilisé (peut recevoir des tâches). */
   UNDERUTILIZED_PCT: 70,
   /** Écart d'échéancier (en points de %) au-delà duquel un projet est « en retard ». */

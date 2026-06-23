@@ -100,7 +100,7 @@ export function buildRecommendations(roster: EmployeeRow[], projects: ProjectRow
   const recs: Recommendation[] = [];
 
   for (const r of whoIsOverloaded(roster)) {
-    const critical = r.metrics.utilizationPct > 110;
+    const critical = r.metrics.utilizationPct > 115;
     recs.push({
       id: `over-${r.employee.id}`,
       category: "capacity",
