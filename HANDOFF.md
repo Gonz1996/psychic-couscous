@@ -1,6 +1,6 @@
 # 📋 Document de transition — MEP Resource Command Center
 
-> **But de ce document** : permettre à un nouveau Claude (ou développeur) de reprendre le projet **sans accès à la conversation précédente**. Autonome et exhaustif. Dernière mise à jour : **2026-06-22**.
+> **But de ce document** : permettre à un nouveau Claude (ou développeur) de reprendre le projet **sans accès à la conversation précédente**. Autonome et exhaustif. Dernière mise à jour : **2026-06-23** (import QuickBooks #26 terminé — voir §14).
 
 ---
 
@@ -196,13 +196,10 @@ C:\mep-rcc\
 
 ## 7. TÂCHES EN COURS ⏳
 
-- **Tâche #26 — Intégration QuickBooks (partielle)** : les CSV ont été LUS et analysés, mais **PAS encore importés** dans la base. Reste à faire :
-  - Mettre à jour **`budgetFees` / `feeDesign`** des projets depuis « rentabilité des projets » (colonne **Revenus** = honoraires réels).
-  - Réassigner les **vrais clients** (colonne Client) à tous les projets (remplace les préfixes + le placeholder).
-  - Créer les **`TimeEntry` réelles** depuis le **Timesheet Detail** (parser `Durée` HH:MM → heures, regrouper par employé/projet/**semaine** = lundi UTC). Ceci active : heures réalisées, utilisation, facturation, heures consommées par projet, et alimente l'EAC.
-  - ⚠️ Le **module Simulation** et le **copilote IA** (spec) ne sont **pas commencés**.
+- **✅ Tâche #26 — Intégration QuickBooks : TERMINÉE (session 2026-06-22)**. Voir [§14](#14-session-2026-06-22--import-quickbooks-26-terminé) pour le détail. Résumé : honoraires + vrais clients + heures réelles importés depuis les CSV (scripts `prisma/import-qb-{fees,hours,extend}.ts`, idempotents). Base : **55 projets, 17 employés, 21 clients, 1466 TimeEntry (10 182,4 h)**. Le tableau de bord, l'utilisation, les heures consommées/projet et l'EAC sont désormais alimentés par de vraies données.
+  - ⚠️ Le **module Simulation** et le **copilote IA** (spec) ne sont **toujours pas commencés** (Phase C).
 
-- **Test utilisateur de la planification en cours** : le client allait tester l'ergonomie de `/projets/[id]/planification` dans le navigateur et donner son retour. **Attendre son feedback avant de continuer la Phase B**, OU améliorer selon ses remarques.
+- **Test utilisateur de la planification** : le client devait tester l'ergonomie de `/projets/[id]/planification`. Feedback non encore reçu — à demander avant/pendant la Phase B.
 
 ---
 
@@ -287,9 +284,32 @@ Occupation        = Heures assignées ÷ Heures disponibles              [seuils
 Exemple spec : Honoraires 100 000 $, profit 30 %, frais 10 %, réserve 5 % → **Budget production = 55 000 $**.
 
 ### Prochaine étape recommandée
-1. Récupérer le **feedback du client sur l'ergonomie de la planification** (`/projets/[id]/planification`).
-2. Faire l'**import QuickBooks** (tâche #26) — ça donne enfin de vraies valeurs (honoraires, clients, heures réelles) et fait « vivre » tout le tableau de bord.
-3. Enchaîner **Phase B** (génération d'affectations par courbe + dashboard direction + réel vs prévu/EAC), puis **Phase C** (simulation + copilote IA).
+1. ~~Import QuickBooks (#26)~~ ✅ **fait** (session 2026-06-22, voir §14).
+2. **Phase B** — démarrer par la **génération d'affectations par courbe** (`Allocation` hebdo depuis les `ProjectStaffing`), puis **dashboard Direction** (réel vs prévu / EAC / marge projetée), puis **alignement des seuils** sur 85/100/115.
+3. Au passage, demander au client le **feedback ergonomie** de `/projets/[id]/planification` et trancher les **questions ouvertes** restantes (§9 : taux chargés, productivité, dates/% projets, courbe par défaut).
+4. Puis **Phase C** (simulation + copilote IA).
+
+---
+
+## 14. SESSION 2026-06-22 — Import QuickBooks (#26) terminé
+
+Réalisé et commité sur `C:\mep-rcc` (+ sauvegarde Q:), `tsc` OK. Commits `6ddf7db` (Phase A enfin versionnée), `afa9736` (import fees+hours), `f310800` (extension).
+
+**Scripts ajoutés (idempotents, source = CSV dans `Q:\1.Cristhian\AI TEST\09_AI_PROJECT\`)** :
+- `prisma/import-qb-fees.ts` — `budgetFees = feeDesign = Revenus` (QB ne sépare pas conception/surveillance → `feeSupervision = 0`), réassigne les vrais clients (col Client), nettoie les clients-préfixes orphelins. Matching par numéro `^\d{5}`.
+- `prisma/import-qb-hours.ts` — parse `Durée` HH:MM → heures, agrège par employé×projet×**semaine (lundi UTC)** → `TimeEntry`. Catégories non-projet exclues. Contient `EMPLOYEE_ALIASES`.
+- `prisma/import-qb-extend.ts` — crée les employés/projets manquants. **À lancer en 1er**, puis fees, puis hours.
+
+**État base après import** : **55 projets** (35 Excel + 20 créés depuis le timesheet), **17 employés**, **21 clients**, **1466 TimeEntry / 10 182,4 h** (période 2026-01-05 → 06-08).
+
+**Décisions client appliquées** :
+- Cristhian pointe au timesheet sous « **Cristhian Alonso Garzon Hoyos** » → alias (407 h rattachées).
+- **David Jutras** créé (Électricité, actif, embauché 2026-01-05) — absent du roster Excel mais actif.
+- **5 employés du timesheet ignorés** (anciens/contractuels, ~1 416 h non importées) : Ramadan Shaath, Samuel Lavigne, Zoe Bernard, Soukaina Azzouzi, Rosalie Faucher.
+
+**Restes neutres** : projet **26034 (RPA Richelieu)** = aucune ligne QB (client « à confirmer », honoraires 0). Employés sans heures projet : Benjamin Allard, David Lajeunesse (gicleurs).
+
+**Pour réimporter** (ex. nouveaux CSV) : `node --env-file=.env --import tsx prisma/import-qb-extend.ts` puis `…import-qb-fees.ts` puis `…import-qb-hours.ts`.
 
 ---
 *Fin du document de transition. Tout le code est sur `C:\mep-rcc` (exécutable, git) avec sauvegarde sur `Q:\…\mep-resource-command-center`.*
