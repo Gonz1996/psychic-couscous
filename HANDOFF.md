@@ -286,9 +286,10 @@ Exemple spec : Honoraires 100 000 $, profit 30 %, frais 10 %, réserve 5 % → *
 ### Prochaine étape recommandée
 1. ~~Import QuickBooks (#26)~~ ✅ **fait** (2026-06-22, §14).
 2. ~~**Phase B — Tableau de bord Direction**~~ ✅ **fait** (2026-06-23, §15) : page `/direction`, financier réalisé (honoraires/coûts/profit/marge globale 34,7 %) + ressources + rentabilité par projet.
-3. **Phase B (suite)** — il reste : **alignement des seuils** 85/100/115 (+ bande Critique, `thresholds.ts`) ; **débloquer les taux horaires chargés** (`costRate`, question §9.1) qui conditionne le volet **projeté** (EAC $, marge projetée) ET la **génération d'affectations par courbe** (`Allocation` depuis `ProjectStaffing`).
-4. Au passage : **feedback ergonomie** de `/projets/[id]/planification` + questions ouvertes §9 (dates/% projets, courbe par défaut).
-5. Puis **Phase C** (simulation + copilote IA).
+3. ~~Réconciliation revenus~~ ✅ + ~~Branding MEP~~ ✅ + ~~Vue firme & obligations fiscales~~ ✅ + ~~seuils 85/100/115~~ ✅ + ~~taux chargés (dérivés paie)~~ ✅ (2026-06-23, §16).
+4. **Phase B — il reste : génération d'affectations par courbe** (`Allocation` hebdo depuis `ProjectStaffing` entre start/end, courbe uniforme/front/back) — bouton dans l'éditeur de planif. (Les taux chargés sont désormais en place, donc la cascade produit des heures.)
+5. Au passage : **feedback ergonomie** de `/projets/[id]/planification` + questions §9 (dates/% projets, courbe par défaut, **valider les taux chargés estimés**).
+6. Puis **Phase C** (simulation + copilote IA).
 
 ---
 
@@ -323,6 +324,18 @@ Commits `0f046c2` (dashboard) + `6db5aaf` (maj HANDOFF). `tsc` OK, `/direction` 
 - **Page `src/app/(app)/direction/page.tsx`** + entrée nav « Direction ». Rendu serveur, pas de graphe client (v1).
 - ⚠️ **Caveat affiché** : marge sur **coûts directs**, avant frais généraux firme (l'État des résultats QB, overhead inclus, est négatif).
 - **Volet « projeté » (EAC $, marge projetée) omis volontairement** : bloqué sur `costRate = 0` (placeholder). Le débloquer = saisir/importer les vrais taux chargés (question §9.1).
+
+---
+
+## 16. SESSION 2026-06-23 (suite) — Revenus, branding, vue firme, seuils, taux
+
+Commits `bd67436`, `a187abb`, `3532348`, `8b0c4bb`, `50cf992`. `tsc` OK, pages 200, synchronisé Q:.
+
+- **Réconciliation revenus** : `import-qb-extend.ts` crée aussi les projets facturés sans heures → **67 projets**, Σ honoraires 1,52 M$ (≈ total rapport).
+- **Branding MEP** : thème marine `#13243F` + or `#C2A14E` (`globals.css` `--brand-*`), logo officiel `public/logo-mep.png` (sidebar + login), favicon `app/icon.svg`, titre app.
+- **Vue firme + obligations fiscales** : migration `add_firm_finance` (singleton, pré-rempli État des résultats : revenu **1 576 803 $**, dépenses 1 635 995 $, net **−59 192 $**), `getFirmFinance()`, action `saveFirmFinance` (RBAC), formulaire éditable TPS/TVQ/DAS/pénalités sur `/direction`. ⚠️ La marge projet (34–38 %) est **avant** overhead ; la firme est en **perte nette**.
+- **Seuils 85/100/115** : `thresholds.ts` (`CRITICAL_PCT` 110→115) + usages.
+- **Taux chargés** : `prisma/derive-cost-rates.ts` — `costRate = paie nette (Bilan) × 1,45 ÷ heures totales loggées`. 42–173 $/h (moy. 93). **Validé** : Σ coût MO 854 k$ vs coût QB 914 k$ = 93 %. Débloque la marge projetée + cascade. **ESTIMATION** — ajustable via formulaire employé (« Coût horaire »). Bruité par projet si saisie de temps incomplète.
 
 ---
 *Fin du document de transition. Tout le code est sur `C:\mep-rcc` (exécutable, git) avec sauvegarde sur `Q:\…\mep-resource-command-center`.*
