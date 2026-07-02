@@ -1,0 +1,23 @@
+{
+  "projectName": "Tour Compartimentée — 14 étages, 1 cage d'escalier, sans garage souterrain",
+  "projectNumber": "EXEMPLE-002",
+  "address": "2000 boulevard Exemple, Québec (Québec)",
+  "preparedBy": "À compléter par l'ingénieur au dossier",
+  "isHighBuilding": true,
+  "numberOfExitStairs": 1,
+  "smokeControlApproach": "compartimentation",
+  "hasUndergroundParking": false,
+  "hasFirefightersElevator": true,
+  "hasElectromagneticAccessControlDoors": false,
+  "hasVoiceCommunication": true,
+  "hasStandbyGenerator": true,
+  "hasFirePump": true,
+  "hasJockeyPump": false,
+  "hasWetSprinklerThroughout": true,
+  "hasDuctSmokeDetectors": false,
+  "suiteSmokeAlarmsReportToFacp": false,
+  "hasStairReentry": false,
+  "hasFireDeptRadioSystem": true,
+  "hasEmergencyIntercomInStairs": true,
+  "notes": "Variante démontrant l'adaptation de l'outil : une seule cage d'escalier, approche par compartimentation (pas de ventilateurs dédiés d'extraction/alimentation), aucun garage souterrain, aucun contrôle d'accès électromagnétique. Illustre le retrait automatique des colonnes/lignes non pertinentes."
+}
