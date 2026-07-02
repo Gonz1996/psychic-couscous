@@ -110,3 +110,12 @@ Le déploiement **Vercel** (Linux) n'est pas concerné par ces limites.
 - [`docs/SCREENS.md`](docs/SCREENS.md) — plan des écrans
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — feuille de route
 - [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md) — intégrations futures (QuickBooks, M365, Power BI…)
+- [`docs/FIRE-ALARM-CAUSE-EFFECT-MATRIX.md`](docs/FIRE-ALARM-CAUSE-EFFECT-MATRIX.md) — outil de génération de matrices causes-effets (alarme incendie, bâtiments multirésidentiels de grande hauteur)
+
+## Outils métier
+
+- **Matrice causes-effets — alarme incendie** (`src/lib/fire-alarm-matrix/`) — génère la matrice causes-effets complète (désenfumage, ascenseurs, ventilation, contrôle d'accès, génératrice, pompes incendie, gicleurs…) d'un bâtiment multirésidentiel de grande hauteur, conforme CNB 2015/Code de construction du Québec/CAN-ULC-S1001, paramétrable par projet. Voir [`docs/FIRE-ALARM-CAUSE-EFFECT-MATRIX.md`](docs/FIRE-ALARM-CAUSE-EFFECT-MATRIX.md).
+
+  ```bash
+  npm run matrix:generate -- fire-alarm-matrix/examples/tour-standard.json
+  ```
