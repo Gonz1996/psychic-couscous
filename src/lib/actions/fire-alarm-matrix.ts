@@ -6,6 +6,7 @@ import {
   slugify,
   toCsv,
   toMarkdown,
+  toXlsxBuffer,
   type ProjectConfig,
 } from "@/lib/fire-alarm-matrix";
 
@@ -34,6 +35,8 @@ export interface MatrixViewModel {
   rows: MatrixRowView[];
   csv: string;
   markdown: string;
+  /** Classeur .xlsx encodé en base64 — décodé côté client pour le téléchargement. */
+  xlsxBase64: string;
 }
 
 export type MatrixFormState =
@@ -110,6 +113,8 @@ export async function generateMatrixAction(_prev: MatrixFormState, formData: For
     cells: matrix.effects.map((e) => row.cells.get(e.id)?.state ?? null),
   }));
 
+  const xlsxBuffer = await toXlsxBuffer(matrix);
+
   return {
     status: "success",
     result: {
@@ -122,6 +127,7 @@ export async function generateMatrixAction(_prev: MatrixFormState, formData: For
       rows,
       csv: toCsv(matrix),
       markdown: toMarkdown(matrix),
+      xlsxBase64: xlsxBuffer.toString("base64"),
     },
   };
 }

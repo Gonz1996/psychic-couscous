@@ -4,7 +4,7 @@
 **No de projet :** EXEMPLE-001
 **Adresse :** 1000 rue Exemple, Montréal (Québec)
 **Préparé par :** À compléter par l'ingénieur au dossier
-**Généré le :** 2026-07-02T16:29:54.860Z
+**Généré le :** 2026-07-03T02:37:34.878Z
 
 ## Configuration du projet
 
@@ -26,6 +26,9 @@
 | Réentrée aux cages d'escalier | Oui |
 | Système radio pompier (DAS) | Oui |
 | Interphonie d'urgence en cage d'escalier | Non |
+| Vanne d'arrêt automatique du gaz naturel | Non |
+| Cuisine commerciale avec hotte et extinction dédiée | Non |
+| Vidéosurveillance (CCTV) intégrée au poste de sécurité | Oui |
 | Notes | Configuration de référence — bâtiment multirésidentiel de grande hauteur type au Québec (approche par extraction à l'étage sinistré). |
 
 ## Légende des états
@@ -34,91 +37,96 @@
 
 ## Points de contrôle retenus (colonnes)
 
-| ID | Catégorie | Système | Point commandé | Référence(s) |
-|---|---|---|---|---|
-| AI-01 | alarme-incendie | Réseau avertisseur d'incendie | Signal sonore d'alerte (ton continu) | CNB2015 3.2.4.20; CNB2015 3.2.4.19 |
-| AI-02 | alarme-incendie | Réseau avertisseur d'incendie | Signal sonore d'évacuation (ton temporel/voix) | CNB2015 3.2.4.20; CNB2015 3.2.4.19 |
-| AI-03 | alarme-incendie | Communication vocale | Message vocal préenregistré d'évacuation | CNB2015 3.2.4.21 |
-| AI-04 | alarme-incendie | Communication vocale | Message vocal préenregistré d'alerte | CNB2015 3.2.4.21 |
-| AI-05 | communication | Communication vocale | Diffusion vocale en direct (microphone pompier/préposé) | CNB2015 3.2.4.21; CNB2015 3.2.6.8 |
-| AI-06 | alarme-incendie | Avertisseurs visuels | Avertisseurs stroboscopiques | CNB2015 3.2.4.18 |
-| AI-07 | alarme-incendie | Tableau annonciateur principal | Indication de la zone en alarme | CNB2015 3.2.4.11 |
-| AI-08 | alarme-incendie | Répétiteur(s) d'annonciateur | Indication de la zone en alarme | CNB2015 3.2.4.11 |
-| AI-09 | communication | Transmission à la télésurveillance | Signal transmis à la station de surveillance | CNB2015 3.2.4.8 |
-| AI-10 | communication | Transmission au service de sécurité incendie | Signal transmis au SSI (directement ou via télésurveillance) | CNB2015 3.2.4.8 |
-| AI-11 | alarme-incendie | Réseau avertisseur d'incendie | Verrouillage clavier (mise sous silence/réarmement inhibés) | CAN-ULC-S524 généralités |
-| AI-12 | alarme-incendie | Réseau avertisseur d'incendie | Enregistrement horodaté de l'événement | CAN-ULC-S1001 5 |
-| DF-01 | desenfumage | Ventilateur de pressurisation — cage d'escalier A | Démarrage | CNB2015 3.2.6.3 |
-| DF-02 | desenfumage | Ventilateur de pressurisation — cage d'escalier B | Démarrage | CNB2015 3.2.6.3 |
-| DF-03 | desenfumage | Ventilateur d'extraction désenfumage — étage sinistré | Démarrage | NFPA-92 conception |
-| DF-04 | desenfumage | Ventilateur d'alimentation d'air — étages adjacents | Démarrage | NFPA-92 conception |
-| DF-05 | volets | Registres motorisés de désenfumage — conduit d'extraction, étage sinistré | Ouverture | NFPA-92 conception |
-| DF-06 | volets | Registres motorisés de désenfumage — conduits des autres étages | Fermeture | NFPA-92 conception |
-| DF-07 | desenfumage | Ventilateur de désenfumage — garage souterrain | Démarrage (grande vitesse / mode désenfumage) | CNB2015 3.2.6.4 |
-| DF-08 | desenfumage | Poste de commande des pompiers (FSCS) | Disponibilité de la commande manuelle prioritaire | CNB2015 3.2.6.8 |
-| EM-01 | evacuation-mecanique | Ventilateurs d'évacuation générale (salles de bain/cuisines communes) | Arrêt | CNB2015 3.2.6.4 |
-| EM-02 | evacuation-mecanique | Ventilateur d'évacuation du garage (mode qualité de l'air) | Bascule en mode désenfumage (voir DF-07) / arrêt du mode CO normal | CNB2015 3.2.6.4 |
-| TA-01 | traitement-air | Unités de traitement d'air desservant plus d'un étage | Arrêt | CNB2015 3.2.6.4 |
-| TA-02 | traitement-air | Unité de traitement d'air dédiée à la pressurisation/désenfumage | Démarrage (fonction inverse de TA-01) | CNB2015 3.2.6.4; NFPA-92 conception |
-| TA-03 | traitement-air | Appareils de toit (RTU) desservant un seul logement | Aucune action | CNB2015 3.2.6.4 |
-| VO-01 | volets | Volets coupe-feu — traversées de séparations coupe-feu | Fermeture | CNB2015 3.1.8.3 |
-| VO-02 | volets | Volets coupe-fumée — gaines verticales | Fermeture (sauf ceux utilisés pour le désenfumage) | CNB2015 3.1.8.5 |
-| VO-03 | volets | Registres combinés coupe-feu/coupe-fumée motorisés — étage sinistré | Position désenfumage (ouvert ou fermé selon séquence) | CNB2015 3.1.8.5; NFPA-92 conception |
-| VM-01 | ventilation-mecanique | Registres coupe-feu muraux (traversées de murs coupe-feu) | Fermeture | CNB2015 3.1.8.3 |
-| VM-02 | ventilation-mecanique | Ventilation du local de vide-ordures / local de recyclage | Arrêt | CNB2015 3.2.6.4 |
-| AS-01 | ascenseurs | Tous les ascenseurs | Rappel Phase I — palier de désignation | CNB2015 3.2.6.9; CSA-B44 2.27 |
-| AS-02 | ascenseurs | Tous les ascenseurs | Rappel Phase I — bascule vers le palier alternatif | CNB2015 3.2.6.9; CSA-B44 2.27 |
-| AS-03 | ascenseurs | Tous les ascenseurs | Interdiction d'arrêt/ouverture des portes à l'étage sinistré | CNB2015 3.2.6.9; CSA-B44 2.27 |
-| AS-04 | ascenseurs | Ascenseur désigné pompiers | Disponibilité du fonctionnement Phase II (manuel, clé pompier) | CSA-B44 2.27.3 |
-| AS-05 | desenfumage | Pressurisation de la gaine d'ascenseur | Démarrage | CNB2015 3.2.6.7 |
-| AS-06 | ascenseurs | Poste de commande principal / répétiteur | Confirmation visuelle du rappel | CNB2015 3.2.6.9 |
-| AS-07 | ascenseurs | Tous les ascenseurs | Fonctionnement sélectif sur alimentation de secours | CNB2015 3.2.7.2; CNB2015 3.2.7.2 |
-| AS-08 | ascenseurs | Tous les ascenseurs | Rappel automatique sur perte du signal (sécurité positive) | CSA-B44 2.27.3.2 |
-| CA-01 | controle-acces | Portes de contrôle d'accès sur le parcours d'évacuation | Déverrouillage | CNB2015 3.4.6.16 |
-| CA-02 | controle-acces | Porte d'accès principale — service incendie | Déverrouillage | CNB2015 3.2.5.5 |
-| CA-03 | controle-acces | Portes de contrôle d'accès hors parcours d'évacuation | Statu quo (verrouillage maintenu, selon stratégie de sécurité du projet) | CNB2015 3.4.6.16 |
-| PV-01 | portes-verrouillage | Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) | Relâchement (fermeture des portes) | CNB2015 3.1.8.12 |
-| PV-02 | portes-verrouillage | Portes de cage d'escalier — réentrée | Déverrouillage pour réentrée | CNB2015 3.4.6.20 |
-| GE-01 | generatrice | Génératrice de secours | Démarrage automatique (sur perte d'alimentation normale) | CNB2015 3.2.7.1; CNB2015 3.2.7.2 |
-| GE-02 | generatrice | Commutateur de transfert automatique (ATS) | Transfert aux charges de sécurité incendie | CNB2015 3.2.7.2; CNB2015 3.2.7.2 |
-| GE-03 | generatrice | Génératrice de secours | Signal de fonctionnement/dérangement | CNB2015 3.2.7.1 |
-| PI-01 | pompes-incendie | Pompe incendie principale | Démarrage automatique (chute de pression détectée) | CNB2015 3.2.5.9 |
-| PI-02 | pompes-incendie | Pompe d'appoint (jockey) | Démarrage automatique (maintien de pression) | CNB2015 3.2.5.9 |
-| PI-03 | pompes-incendie | Contrôleur de pompe incendie | Signal de marche/dérangement transmis au tableau | CNB2015 3.2.5.9; CNB2015 3.2.4.11 |
-| PI-04 | pompes-incendie | Pompe incendie principale | Arrêt — manuel uniquement | CNB2015 3.2.5.9 |
-| GI-01 | gicleurs | Détecteur de débit d'eau (flow switch) | Signal d'alarme au tableau | CNB2015 3.2.4.10 |
-| GI-02 | gicleurs | Vanne de contrôle de zone de gicleurs | Signal de supervision — vanne fermée | CNB2015 3.2.4.10 |
-| GI-03 | gicleurs | Réseau de gicleurs | Signal de supervision — pression basse | CNB2015 3.2.4.10 |
-| GI-04 | gicleurs | Réservoir/citerne d'eau incendie | Signal de supervision — niveau bas | CNB2015 3.2.4.10 |
-| GI-05 | gicleurs | Local technique chauffé abritant le réseau | Signal de supervision — température basse | CNB2015 3.2.4.10 |
-| CO-01 | communication | Système de communication bidirectionnelle pompiers (antenne distribuée) | Disponibilité continue, statut vérifié à l'alarme | RBQ à confirmer |
-| ES-01 | eclairage-securite | Éclairage de sécurité / issues | Allumage automatique | CNB2015 3.2.7.1 |
-| ES-02 | eclairage-securite | Affichage lumineux de sortie | Alimentation confirmée par la source de secours | CNB2015 3.2.7.1 |
+| ID | Catégorie | Discipline | Alimentation | Système | Point commandé | Référence(s) |
+|---|---|---|---|---|---|---|
+| AI-01 | alarme-incendie | Protection incendie | Normale + secours | Réseau avertisseur d'incendie | Signal sonore d'alerte (ton continu) | CNB2015 3.2.4.20; CNB2015 3.2.4.19 |
+| AI-02 | alarme-incendie | Protection incendie | Normale + secours | Réseau avertisseur d'incendie | Signal sonore d'évacuation (ton temporel/voix) | CNB2015 3.2.4.20; CNB2015 3.2.4.19 |
+| AI-03 | alarme-incendie | Protection incendie | Normale + secours | Communication vocale | Message vocal préenregistré d'évacuation | CNB2015 3.2.4.21 |
+| AI-04 | alarme-incendie | Protection incendie | Normale + secours | Communication vocale | Message vocal préenregistré d'alerte | CNB2015 3.2.4.21 |
+| AI-05 | communication | Protection incendie | Normale + secours | Communication vocale | Diffusion vocale en direct (microphone pompier/préposé) | CNB2015 3.2.4.21; CNB2015 3.2.6.8 |
+| AI-06 | alarme-incendie | Protection incendie | Normale + secours | Avertisseurs visuels | Avertisseurs stroboscopiques | CNB2015 3.2.4.18 |
+| AI-07 | alarme-incendie | Protection incendie | Normale + secours | Tableau annonciateur principal | Indication de la zone en alarme | CNB2015 3.2.4.11 |
+| AI-08 | alarme-incendie | Protection incendie | Normale + secours | Répétiteur(s) d'annonciateur | Indication de la zone en alarme | CNB2015 3.2.4.11 |
+| AI-09 | communication | Protection incendie | Normale + secours | Transmission à la télésurveillance | Signal transmis à la station de surveillance | CNB2015 3.2.4.8 |
+| AI-10 | communication | Protection incendie | Normale + secours | Transmission au service de sécurité incendie | Signal transmis au SSI (directement ou via télésurveillance) | CNB2015 3.2.4.8 |
+| AI-11 | alarme-incendie | Protection incendie | Normale + secours | Réseau avertisseur d'incendie | Verrouillage clavier (mise sous silence/réarmement inhibés) | CAN-ULC-S524 généralités |
+| AI-12 | alarme-incendie | Protection incendie | Normale + secours | Réseau avertisseur d'incendie | Enregistrement horodaté de l'événement | CAN-ULC-S1001 5 |
+| DF-01 | desenfumage | Mécanique | Secours | Ventilateur de pressurisation — cage d'escalier A | Démarrage | CNB2015 3.2.6.3 |
+| DF-02 | desenfumage | Mécanique | Secours | Ventilateur de pressurisation — cage d'escalier B | Démarrage | CNB2015 3.2.6.3 |
+| DF-03 | desenfumage | Mécanique | Secours | Ventilateur d'extraction désenfumage — étage sinistré | Démarrage | NFPA-92 conception |
+| DF-04 | desenfumage | Mécanique | Secours | Ventilateur d'alimentation d'air — étages adjacents | Démarrage | NFPA-92 conception |
+| DF-05 | volets | Mécanique | Normale + secours | Registres motorisés de désenfumage — conduit d'extraction, étage sinistré | Ouverture | NFPA-92 conception |
+| DF-06 | volets | Mécanique | Normale + secours | Registres motorisés de désenfumage — conduits des autres étages | Fermeture | NFPA-92 conception |
+| DF-07 | desenfumage | Mécanique | Secours | Ventilateur de désenfumage — garage souterrain | Démarrage (grande vitesse / mode désenfumage) | CNB2015 3.2.6.4 |
+| DF-08 | desenfumage | Mécanique | Secours | Poste de commande des pompiers (FSCS) | Disponibilité de la commande manuelle prioritaire | CNB2015 3.2.6.8 |
+| EM-01 | evacuation-mecanique | Mécanique | Normale | Ventilateurs d'évacuation générale (salles de bain/cuisines communes) | Arrêt | CNB2015 3.2.6.4 |
+| EM-02 | evacuation-mecanique | Mécanique | Normale | Ventilateur d'évacuation du garage (mode qualité de l'air) | Bascule en mode désenfumage (voir DF-07) / arrêt du mode CO normal | CNB2015 3.2.6.4 |
+| TA-01 | traitement-air | Mécanique | Normale | Unités de traitement d'air desservant plus d'un étage | Arrêt | CNB2015 3.2.6.4 |
+| TA-02 | traitement-air | Mécanique | Normale | Unité de traitement d'air dédiée à la pressurisation/désenfumage | Démarrage (fonction inverse de TA-01) | CNB2015 3.2.6.4; NFPA-92 conception |
+| TA-03 | traitement-air | Mécanique | Normale | Appareils de toit (RTU) desservant un seul logement | Aucune action | CNB2015 3.2.6.4 |
+| VO-01 | volets | Mécanique | Normale + secours | Volets coupe-feu — traversées de séparations coupe-feu | Fermeture | CNB2015 3.1.8.3 |
+| VO-02 | volets | Mécanique | Normale + secours | Volets coupe-fumée — gaines verticales | Fermeture (sauf ceux utilisés pour le désenfumage) | CNB2015 3.1.8.5 |
+| VO-03 | volets | Mécanique | Normale + secours | Registres combinés coupe-feu/coupe-fumée motorisés — étage sinistré | Position désenfumage (ouvert ou fermé selon séquence) | CNB2015 3.1.8.5; NFPA-92 conception |
+| VM-01 | ventilation-mecanique | Mécanique | Normale | Registres coupe-feu muraux (traversées de murs coupe-feu) | Fermeture | CNB2015 3.1.8.3 |
+| VM-02 | ventilation-mecanique | Mécanique | Normale | Ventilation du local de vide-ordures / local de recyclage | Arrêt | CNB2015 3.2.6.4 |
+| AS-01 | ascenseurs | Électricité | Secours | Tous les ascenseurs | Rappel Phase I — palier de désignation | CNB2015 3.2.6.9; CSA-B44 2.27 |
+| AS-02 | ascenseurs | Électricité | Secours | Tous les ascenseurs | Rappel Phase I — bascule vers le palier alternatif | CNB2015 3.2.6.9; CSA-B44 2.27 |
+| AS-03 | ascenseurs | Électricité | Secours | Tous les ascenseurs | Interdiction d'arrêt/ouverture des portes à l'étage sinistré | CNB2015 3.2.6.9; CSA-B44 2.27 |
+| AS-04 | ascenseurs | Électricité | Secours | Ascenseur désigné pompiers | Disponibilité du fonctionnement Phase II (manuel, clé pompier) | CSA-B44 2.27.3 |
+| AS-05 | desenfumage | Mécanique | Secours | Pressurisation de la gaine d'ascenseur | Démarrage | CNB2015 3.2.6.7 |
+| AS-06 | ascenseurs | Électricité | Secours | Poste de commande principal / répétiteur | Confirmation visuelle du rappel | CNB2015 3.2.6.9 |
+| AS-07 | ascenseurs | Électricité | Secours | Tous les ascenseurs | Fonctionnement sélectif sur alimentation de secours | CNB2015 3.2.7.2; CNB2015 3.2.7.2 |
+| AS-08 | ascenseurs | Électricité | Secours | Tous les ascenseurs | Rappel automatique sur perte du signal (sécurité positive) | CSA-B44 2.27.3.2 |
+| CA-01 | controle-acces | Électricité | Normale + secours | Portes de contrôle d'accès sur le parcours d'évacuation | Déverrouillage | CNB2015 3.4.6.16 |
+| CA-02 | controle-acces | Électricité | Normale + secours | Porte d'accès principale — service incendie | Déverrouillage | CNB2015 3.2.5.5 |
+| CA-03 | controle-acces | Électricité | Normale + secours | Portes de contrôle d'accès hors parcours d'évacuation | Statu quo (verrouillage maintenu, selon stratégie de sécurité du projet) | CNB2015 3.4.6.16 |
+| PV-01 | portes-verrouillage | Électricité | Normale + secours | Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) | Relâchement (fermeture des portes) | CNB2015 3.1.8.12 |
+| PV-02 | portes-verrouillage | Électricité | Normale + secours | Portes de cage d'escalier — réentrée | Déverrouillage pour réentrée | CNB2015 3.4.6.20 |
+| GE-01 | generatrice | Électricité | Secours | Génératrice de secours | Démarrage automatique (sur perte d'alimentation normale) | CNB2015 3.2.7.1; CNB2015 3.2.7.2 |
+| GE-02 | generatrice | Électricité | Secours | Commutateur de transfert automatique (ATS) | Transfert aux charges de sécurité incendie | CNB2015 3.2.7.2; CNB2015 3.2.7.2 |
+| GE-03 | generatrice | Électricité | Secours | Génératrice de secours | Signal de fonctionnement/dérangement | CNB2015 3.2.7.1 |
+| PI-01 | pompes-incendie | Mécanique | Secours | Pompe incendie principale | Démarrage automatique (chute de pression détectée) | CNB2015 3.2.5.9 |
+| PI-02 | pompes-incendie | Mécanique | Secours | Pompe d'appoint (jockey) | Démarrage automatique (maintien de pression) | CNB2015 3.2.5.9 |
+| PI-03 | pompes-incendie | Mécanique | Secours | Contrôleur de pompe incendie | Signal de marche/dérangement transmis au tableau | CNB2015 3.2.5.9; CNB2015 3.2.4.11 |
+| PI-04 | pompes-incendie | Mécanique | Secours | Pompe incendie principale | Arrêt — manuel uniquement | CNB2015 3.2.5.9 |
+| GI-01 | gicleurs | Mécanique | Normale + secours | Détecteur de débit d'eau (flow switch) | Signal d'alarme au tableau | CNB2015 3.2.4.10 |
+| GI-02 | gicleurs | Mécanique | Normale + secours | Vanne de contrôle de zone de gicleurs | Signal de supervision — vanne fermée | CNB2015 3.2.4.10 |
+| GI-03 | gicleurs | Mécanique | Normale + secours | Réseau de gicleurs | Signal de supervision — pression basse | CNB2015 3.2.4.10 |
+| GI-04 | gicleurs | Mécanique | Normale + secours | Réservoir/citerne d'eau incendie | Signal de supervision — niveau bas | CNB2015 3.2.4.10 |
+| GI-05 | gicleurs | Mécanique | Normale + secours | Local technique chauffé abritant le réseau | Signal de supervision — température basse | CNB2015 3.2.4.10 |
+| CO-01 | communication | Protection incendie | Normale + secours | Système de communication bidirectionnelle pompiers (antenne distribuée) | Disponibilité continue, statut vérifié à l'alarme | RBQ à confirmer |
+| ES-01 | eclairage-securite | Électricité | Secours | Éclairage de sécurité / issues | Allumage automatique | CNB2015 3.2.7.1 |
+| ES-02 | eclairage-securite | Électricité | Secours | Affichage lumineux de sortie | Alimentation confirmée par la source de secours | CNB2015 3.2.7.1 |
+| DF-09 | desenfumage | Mécanique | Normale + secours | Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) | Ouverture automatique (limitation de surpression) | NFPA-92 conception; CNB2015 3.2.6.3 |
+| GI-06 | gicleurs | Mécanique | Normale + secours | Avertisseur hydraulique (gong) — zone de gicleurs | Sonnerie locale actionnée par le débit d'eau | CNB2015 3.2.4.10 |
+| SE-01 | securite-electronique | Électricité | Secours | Système de vidéosurveillance (CCTV) | Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | RBQ à confirmer |
 
 ## Matrice complète
 
-| Scénario | AI-01 | AI-02 | AI-03 | AI-04 | AI-05 | AI-06 | AI-07 | AI-08 | AI-09 | AI-10 | AI-11 | AI-12 | DF-01 | DF-02 | DF-03 | DF-04 | DF-05 | DF-06 | DF-07 | DF-08 | EM-01 | EM-02 | TA-01 | TA-02 | TA-03 | VO-01 | VO-02 | VO-03 | VM-01 | VM-02 | AS-01 | AS-02 | AS-03 | AS-04 | AS-05 | AS-06 | AS-07 | AS-08 | CA-01 | CA-02 | CA-03 | PV-01 | PV-02 | GE-01 | GE-02 | GE-03 | PI-01 | PI-02 | PI-03 | PI-04 | GI-01 | GI-02 | GI-03 | GI-04 | GI-05 | CO-01 | ES-01 | ES-02 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **S01** — Alarme générale — détecteur de fumée en aire commune | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S02** — Alarme générale — détecteur de fumée en gaine (conduit d'air) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S03** — Alarme générale — détecteur thermique | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S04** — Alarme générale — déclencheur manuel (poste d'alarme manuelle) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S05** — Alarme générale — débit d'eau gicleur (flow switch) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  | MARCHE |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S06** — Alarme — détecteur de fumée privé de logement raccordé au réseau central | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S17** — Alarme — garage souterrain (détection combinée fumée/CO ou thermique) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME | MARCHE | DISPONIBLE-MODE-POMPIER | ARRET | SELON-CONCEPTION | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S19** — Détection de fumée au palier d'ascenseur (détecteur dédié au rappel) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  |
-| **S07** — Supervision — vanne de contrôle de gicleurs fermée |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  |  |  |  |  |  |  |  |  |
-| **S08** — Supervision — pression basse dans le réseau de gicleurs |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | MARCHE |  |  |  |  |  |  |  |  |  |  |
-| **S09** — Supervision — niveau bas de réservoir/citerne ou température basse de local protégé |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S10** — Perte de l'alimentation électrique normale |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | SELON-CONCEPTION |  |  |  |  |  |  | MARCHE | ACTIF | ACTIF | SELON-CONCEPTION |  |  |  |  |  |  |  |  |  | MARCHE | ACTIF |
-| **S11** — Défaut de communication / dérangement du système (perte de boucle, court-circuit) |  |  |  |  |  |  | SIGNAL-DERANGEMENT | SIGNAL-DERANGEMENT | ACTIF |  |  | ACTIF | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  |  |  |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S18** — Défaillance générale du tableau (perte CA et réserve batterie) |  |  |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  |  |  |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  |  | FERME |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S12** — Activation manuelle du poste de commande des pompiers (FSCS override) |  |  |  |  | DISPONIBLE-MODE-POMPIER |  | ACTIF |  |  |  |  |  | SELON-CONCEPTION |  | SELON-CONCEPTION |  |  |  |  | CONTROLE-MANUEL-POMPIER |  |  |  |  |  |  |  | SELON-CONCEPTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S13** — Activation manuelle — fonctionnement Phase II de l'ascenseur (clé pompier) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CONTROLE-MANUEL-POMPIER |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S20** — Retrait de la clé Phase II / fin du contrôle manuel pompier |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  | INACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S14** — Mode essai/vérification technicien (walk test) |  |  |  |  |  |  | ACTIF |  | INACTIF |  |  | ACTIF | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S15** — Pré-alarme / signal de vérification d'alarme (temporisation d'investigation) | AUCUNE-ACTION | AUCUNE-ACTION |  |  |  |  | ACTIF |  |  |  |  | ACTIF | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| **S16** — Réarmement du système après intervention | INACTIF | INACTIF |  |  |  | INACTIF |  |  |  |  |  | ACTIF | ARRET |  | ARRET |  |  |  |  |  |  |  | MARCHE |  |  |  |  | FERME |  |  | SELON-CONCEPTION |  |  |  |  |  |  |  | VERROUILLE |  |  | OUVERT |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Scénario | AI-01 | AI-02 | AI-03 | AI-04 | AI-05 | AI-06 | AI-07 | AI-08 | AI-09 | AI-10 | AI-11 | AI-12 | DF-01 | DF-02 | DF-03 | DF-04 | DF-05 | DF-06 | DF-07 | DF-08 | EM-01 | EM-02 | TA-01 | TA-02 | TA-03 | VO-01 | VO-02 | VO-03 | VM-01 | VM-02 | AS-01 | AS-02 | AS-03 | AS-04 | AS-05 | AS-06 | AS-07 | AS-08 | CA-01 | CA-02 | CA-03 | PV-01 | PV-02 | GE-01 | GE-02 | GE-03 | PI-01 | PI-02 | PI-03 | PI-04 | GI-01 | GI-02 | GI-03 | GI-04 | GI-05 | CO-01 | ES-01 | ES-02 | DF-09 | GI-06 | SE-01 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **S01** — Alarme générale — détecteur de fumée en aire commune | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S02** — Alarme générale — détecteur de fumée en gaine (conduit d'air) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S03** — Alarme générale — détecteur thermique | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S04** — Alarme générale — déclencheur manuel (poste d'alarme manuelle) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S05** — Alarme générale — débit d'eau gicleur (flow switch) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  | MARCHE |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT | ACTIF | ACTIF |
+| **S06** — Alarme — détecteur de fumée privé de logement raccordé au réseau central | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S17** — Alarme — garage souterrain (détection combinée fumée/CO ou thermique) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME | MARCHE | DISPONIBLE-MODE-POMPIER | ARRET | SELON-CONCEPTION | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S19** — Détection de fumée au palier d'ascenseur (détecteur dédié au rappel) | SIGNAL-ALERTE | SIGNAL-EVACUATION | ACTIF | ACTIF | DISPONIBLE-MODE-POMPIER | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | ACTIF | MARCHE | MARCHE | MARCHE | MARCHE | OUVERT | FERME |  | DISPONIBLE-MODE-POMPIER | ARRET |  | ARRET | MARCHE | AUCUNE-ACTION | FERME | FERME | SELON-CONCEPTION | FERME | ARRET | RAPPEL-PALIER-DESIGNATION | RAPPEL-PALIER-ALTERNATIF | INACTIF | DISPONIBLE-MODE-POMPIER | MARCHE | ACTIF |  |  | DEVERROUILLE | DEVERROUILLE | SELON-CONCEPTION | FERME | DEVERROUILLE |  |  |  |  |  |  |  |  |  |  |  |  | ACTIF |  |  | OUVERT |  | ACTIF |
+| **S07** — Supervision — vanne de contrôle de gicleurs fermée |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S08** — Supervision — pression basse dans le réseau de gicleurs |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | MARCHE |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S09** — Supervision — niveau bas de réservoir/citerne ou température basse de local protégé |  |  |  |  |  |  | SIGNAL-SUPERVISION | SIGNAL-SUPERVISION | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S21** — Supervision — batterie du panneau de contrôle d'incendie faible ou défaillante |  |  |  |  |  |  | SIGNAL-DERANGEMENT | SIGNAL-DERANGEMENT | ACTIF |  |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S10** — Perte de l'alimentation électrique normale |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | SELON-CONCEPTION |  |  |  |  |  |  | MARCHE | ACTIF | ACTIF | SELON-CONCEPTION |  |  |  |  |  |  |  |  |  | MARCHE | ACTIF |  |  |  |
+| **S11** — Défaut de communication / dérangement du système (perte de boucle, court-circuit) |  |  |  |  |  |  | SIGNAL-DERANGEMENT | SIGNAL-DERANGEMENT | ACTIF |  |  | ACTIF | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  |  |  |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S23** — Dérangement du système de communication bidirectionnelle pompiers (DAS) |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  |  |  |  |  |
+| **S18** — Défaillance générale du tableau (perte CA et réserve batterie) |  |  |  |  |  |  |  |  | SIGNAL-DERANGEMENT |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  |  |  |  |  |  | POSITION-REPLI-SECURITAIRE |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  |  | FERME |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S12** — Activation manuelle du poste de commande des pompiers (FSCS override) |  |  |  |  | DISPONIBLE-MODE-POMPIER |  | ACTIF |  |  |  |  |  | SELON-CONCEPTION |  | SELON-CONCEPTION |  |  |  |  | CONTROLE-MANUEL-POMPIER |  |  |  |  |  |  |  | SELON-CONCEPTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S13** — Activation manuelle — fonctionnement Phase II de l'ascenseur (clé pompier) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CONTROLE-MANUEL-POMPIER |  | ACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S20** — Retrait de la clé Phase II / fin du contrôle manuel pompier |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | RAPPEL-PALIER-DESIGNATION |  |  | INACTIF |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S14** — Mode essai/vérification technicien (walk test) |  |  |  |  |  |  | ACTIF |  | INACTIF |  |  | ACTIF | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S15** — Pré-alarme / signal de vérification d'alarme (temporisation d'investigation) | AUCUNE-ACTION | AUCUNE-ACTION |  |  |  |  | ACTIF |  |  |  |  | ACTIF | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | AUCUNE-ACTION |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| **S16** — Réarmement du système après intervention | INACTIF | INACTIF |  |  |  | INACTIF |  |  |  |  |  | ACTIF | ARRET |  | ARRET |  |  |  |  |  |  |  | MARCHE |  |  |  |  | FERME |  |  | SELON-CONCEPTION |  |  |  |  |  |  |  | VERROUILLE |  |  | OUVERT |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ## Fiches détaillées par scénario
 
@@ -174,6 +182,8 @@ Un détecteur de fumée situé dans une aire commune (corridor d'étage, hall, c
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S02 — Alarme générale — détecteur de fumée en gaine (conduit d'air)
 
@@ -227,6 +237,8 @@ Un détecteur de fumée installé dans un conduit d'air (alimentation ou retour)
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S03 — Alarme générale — détecteur thermique
 
@@ -280,6 +292,8 @@ Un détecteur thermique installé dans un local où la fumée normale d'exploita
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S04 — Alarme générale — déclencheur manuel (poste d'alarme manuelle)
 
@@ -333,6 +347,8 @@ Un occupant actionne un poste d'alarme manuelle situé sur le parcours d'évacua
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S05 — Alarme générale — débit d'eau gicleur (flow switch)
 
@@ -387,6 +403,9 @@ Un débit d'eau soutenu (au-delà du délai anti-à-coup, typ. 45-90 s) est dét
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | PI-01 — Pompe incendie principale — Démarrage automatique (chute de pression détectée) | MARCHE | — | Le débit d'eau soutenu provoque généralement la chute de pression déclenchant le démarrage automatique de la pompe incendie. | CNB2015 3.2.5.9 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| GI-06 — Avertisseur hydraulique (gong) — zone de gicleurs — Sonnerie locale actionnée par le débit d'eau | ACTIF | — | Sonnerie hydraulique locale actionnée mécaniquement par le débit d'eau — signal audible immédiat près de la vanne de zone, indépendant du tableau. | CNB2015 3.2.4.10 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S06 — Alarme — détecteur de fumée privé de logement raccordé au réseau central
 
@@ -440,6 +459,8 @@ Un avertisseur de fumée situé à l'intérieur d'un logement, dont le raccordem
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S17 — Alarme — garage souterrain (détection combinée fumée/CO ou thermique)
 
@@ -495,6 +516,8 @@ Un dispositif de détection du garage souterrain passe en alarme.
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S19 — Détection de fumée au palier d'ascenseur (détecteur dédié au rappel)
 
@@ -548,6 +571,8 @@ Détecteur dédié, distinct des détecteurs d'aire commune, requis à chaque pa
 | PV-01 — Dispositifs de retenue magnétique (portes coupe-feu maintenues ouvertes) — Relâchement (fermeture des portes) | FERME | — | Relâchement des dispositifs de retenue — fermeture des portes coupe-feu maintenues ouvertes. | CNB2015 3.1.8.12 |
 | PV-02 — Portes de cage d'escalier — réentrée — Déverrouillage pour réentrée | DEVERROUILLE | — | Déverrouillage pour réentrée aux étages, si cette stratégie est requise au projet. | CNB2015 3.4.6.20 |
 | CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | ACTIF | — | Statut du système radio pompier vérifié, actif en permanence. | RBQ à confirmer |
+| DF-09 — Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s) — Ouverture automatique (limitation de surpression) | OUVERT | — | Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible. | NFPA-92 conception; CNB2015 3.2.6.3 |
+| SE-01 — Système de vidéosurveillance (CCTV) — Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité | ACTIF | — | Priorisation de la caméra de la zone en alarme au poste de sécurité. | RBQ à confirmer |
 
 ### S07 — Supervision — vanne de contrôle de gicleurs fermée
 
@@ -600,6 +625,23 @@ Signal de supervision sur le niveau d'eau du réservoir dédié ou sur la tempé
 | AI-08 — Répétiteur(s) d'annonciateur — Indication de la zone en alarme | SIGNAL-SUPERVISION | — | Reproduction au(x) répétiteur(s). | CNB2015 3.2.4.11 |
 | AI-09 — Transmission à la télésurveillance — Signal transmis à la station de surveillance | ACTIF | — | Transmission à la télésurveillance. | CNB2015 3.2.4.8 |
 
+### S21 — Supervision — batterie du panneau de contrôle d'incendie faible ou défaillante
+
+**Catégorie :** Supervision (gicleurs)  
+**Dispositif initiateur :** Circuit de supervision de la source secondaire (batteries) du panneau de contrôle d'incendie  
+**Référence(s) :** CAN-ULC-S524 généralités
+
+Le panneau détecte que sa réserve de batteries est sous le seuil requis pour assurer l'autonomie prescrite (généralement 24 h en veille + 5 min en alarme) ou qu'une batterie est défectueuse.
+
+**Analyse d'ingénierie / interactions entre systèmes :** Signal de supervision/dérangement, pas une alarme feu — mais critique à surveiller puisqu'il conditionne la fiabilité du système advenant une perte simultanée de l'alimentation normale (voir S10 et S18). Contrairement aux signaux de supervision du réseau de gicleurs (S07-S09), celui-ci concerne le système d'alarme incendie lui-même et doit apparaître clairement distinct d'une alarme au tableau et à la télésurveillance.
+
+| Point de contrôle | État | Délai | Justification | Référence(s) |
+|---|---|---|---|---|
+| AI-07 — Tableau annonciateur principal — Indication de la zone en alarme | SIGNAL-DERANGEMENT | — | Indication de dérangement de la source secondaire au tableau principal. | CNB2015 3.2.4.11 |
+| AI-08 — Répétiteur(s) d'annonciateur — Indication de la zone en alarme | SIGNAL-DERANGEMENT | — | Reproduction au(x) répétiteur(s). | CNB2015 3.2.4.11 |
+| AI-09 — Transmission à la télésurveillance — Signal transmis à la station de surveillance | ACTIF | — | Transmission du dérangement à la télésurveillance. | CNB2015 3.2.4.8 |
+| AI-12 — Réseau avertisseur d'incendie — Enregistrement horodaté de l'événement | ACTIF | — | Horodatage de l'événement. | CAN-ULC-S1001 5 |
+
 ### S10 — Perte de l'alimentation électrique normale
 
 **Catégorie :** Opération manuelle  
@@ -641,6 +683,22 @@ Une boucle de détection, un module de commande déporté ou un lien de communic
 | DF-01 — Ventilateur de pressurisation — cage d'escalier A — Démarrage | POSITION-REPLI-SECURITAIRE | — | Aucun démarrage automatique ; le ventilateur affecté demeure dans son état de repli défini à la conception jusqu'au rétablissement. | CNB2015 3.2.6.3 |
 | VO-03 — Registres combinés coupe-feu/coupe-fumée motorisés — étage sinistré — Position désenfumage (ouvert ou fermé selon séquence) | POSITION-REPLI-SECURITAIRE | — | Les registres motorisés asservis au module affecté prennent leur position de repli sécuritaire prédéterminée. | CNB2015 3.1.8.5; NFPA-92 conception |
 | AS-08 — Tous les ascenseurs — Rappel automatique sur perte du signal (sécurité positive) | RAPPEL-PALIER-DESIGNATION | — | Sécurité positive : perte de continuité du circuit de rappel d'un ascenseur = rappel automatique de cet ascenseur. | CSA-B44 2.27.3.2 |
+
+### S23 — Dérangement du système de communication bidirectionnelle pompiers (DAS)
+
+**Catégorie :** Dérangement  
+**Dispositif initiateur :** Système d'aide aux communications des services d'urgence (antenne distribuée, amplificateurs)  
+**Référence(s) :** RBQ à confirmer
+
+Le système radio dédié aux services d'urgence (DAS/BDA) signale une perte de puissance, une défaillance d'amplificateur ou une perte de batterie de secours.
+
+**Analyse d'ingénierie / interactions entre systèmes :** N'affecte ni le désenfumage ni l'évacuation — c'est un système de communication d'urgence indépendant de la séquence d'alarme, mais son dérangement doit être signalé distinctement puisqu'il compromet la capacité radio des pompiers à l'intérieur du bâtiment lors d'une intervention. Applicable seulement aux projets dotés d'un tel système (`hasFireDeptRadioSystem`).
+
+| Point de contrôle | État | Délai | Justification | Référence(s) |
+|---|---|---|---|---|
+| AI-07 — Tableau annonciateur principal — Indication de la zone en alarme | SIGNAL-DERANGEMENT | — | Reproduction au tableau principal. | CNB2015 3.2.4.11 |
+| AI-09 — Transmission à la télésurveillance — Signal transmis à la station de surveillance | ACTIF | — | Transmission du dérangement à la télésurveillance. | CNB2015 3.2.4.8 |
+| CO-01 — Système de communication bidirectionnelle pompiers (antenne distribuée) — Disponibilité continue, statut vérifié à l'alarme | SIGNAL-DERANGEMENT | — | Indication de dérangement du système radio pompier. | RBQ à confirmer |
 
 ### S18 — Défaillance générale du tableau (perte CA et réserve batterie)
 

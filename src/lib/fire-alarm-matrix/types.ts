@@ -21,6 +21,8 @@ export type CodeName =
   | "CAN-ULC-S536-DAMPERS" // Registres coupe-feu / coupe-fumée (essais)
   | "CSA-B44" // Code de sécurité des ascenseurs
   | "NFPA-92" // Systèmes de contrôle de fumée (référence de conception)
+  | "NFPA-96" // Systèmes de ventilation et de protection contre l'incendie des cuisines commerciales
+  | "CSA-B149" // Code d'installation du gaz naturel et du propane
   | "RBQ"; // Directives / bulletins de la Régie du bâtiment du Québec
 
 export interface CodeReference {
@@ -45,7 +47,16 @@ export type SystemCategory =
   | "gicleurs"
   | "ventilation-mecanique"
   | "communication"
-  | "eclairage-securite";
+  | "eclairage-securite"
+  | "gaz"
+  | "cuisine-commerciale"
+  | "securite-electronique";
+
+/** Corps de métier responsable de la mise en œuvre/entretien du point de contrôle. */
+export type Discipline = "protection-incendie" | "electricite" | "mecanique";
+
+/** Source d'alimentation électrique du point de contrôle. */
+export type PowerSource = "normale" | "secours" | "les-deux";
 
 /** Portée de zone standardisée (relative), réutilisable indépendamment du nombre d'étages réel. */
 export type ZoneScope =
@@ -93,6 +104,10 @@ export interface EffectPoint {
   /** Description libre de la logique de commande, utile en ingénierie de détail. */
   description: string;
   references: CodeReference[];
+  /** Corps de métier responsable. Si absent, déduit de `category` (voir CATEGORY_DISCIPLINE dans systems.ts). */
+  discipline?: Discipline;
+  /** Source d'alimentation. Si absent, déduit de `category` (voir CATEGORY_POWER_SOURCE dans systems.ts). */
+  powerSource?: PowerSource;
   /**
    * Condition d'applicabilité au projet. Si absente, le point s'applique à
    * tous les projets. Permet la modularité (ex. n'apparaît que si le projet
@@ -165,6 +180,12 @@ export interface ProjectConfig {
   hasStairReentry: boolean;
   hasFireDeptRadioSystem: boolean;
   hasEmergencyIntercomInStairs: boolean;
+  /** Vanne d'arrêt automatique du gaz naturel asservie à l'alarme incendie. */
+  hasNaturalGasShutoff: boolean;
+  /** Cuisine commerciale avec hotte et système d'extinction dédié (NFPA 96) — aires communes/locaux commerciaux. */
+  hasCommercialKitchenHood: boolean;
+  /** Système de vidéosurveillance intégré au poste de sécurité. */
+  hasCctv: boolean;
   notes?: string;
 }
 
