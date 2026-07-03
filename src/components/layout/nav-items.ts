@@ -12,6 +12,7 @@ import {
   Sparkles,
   BarChart3,
   ShieldCheck,
+  Flame,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,6 +36,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/alertes", label: "Alertes", icon: Bell },
   { href: "/ia", label: "Assistant IA", icon: Sparkles },
   { href: "/rapports", label: "Rapports", icon: BarChart3 },
+  { href: "/matrice-incendie", label: "Matrice incendie", icon: Flame },
   { href: "/admin/utilisateurs", label: "Utilisateurs", icon: ShieldCheck, adminOnly: true },
 ];
 
