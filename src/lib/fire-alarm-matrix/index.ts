@@ -5,4 +5,5 @@ export { SCENARIOS, getScenario } from "./scenarios";
 export { DEFAULT_PROJECT_CONFIG, loadProjectConfig, projectConfigSchema } from "./config";
 export { generateCauseEffectMatrix, validateCatalog } from "./build-matrix";
 export { toCsv, toMarkdown } from "./export";
+export { toXlsxBuffer } from "./export-xlsx";
 export { slugify } from "./slug";

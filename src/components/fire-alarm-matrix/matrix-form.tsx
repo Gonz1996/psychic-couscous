@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { Download, FileText, Loader2 } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
 import { generateMatrixAction, type MatrixFormState } from "@/lib/actions/fire-alarm-matrix";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,14 +128,23 @@ function MatrixResult({ result }: { result: Extract<MatrixFormState, { status: "
           </div>
           <div className="flex gap-2">
             <DownloadButton
-              label="Télécharger CSV"
+              label="Télécharger Excel (.xlsx)"
+              icon={FileSpreadsheet}
+              filename={`${result.fileSlug}.xlsx`}
+              content={result.xlsxBase64}
+              encoding="base64"
+              mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              variant="default"
+            />
+            <DownloadButton
+              label="CSV"
               icon={Download}
               filename={`${result.fileSlug}.csv`}
               content={result.csv}
               mimeType="text/csv;charset=utf-8"
             />
             <DownloadButton
-              label="Télécharger Markdown"
+              label="Markdown"
               icon={FileText}
               filename={`${result.fileSlug}.md`}
               content={result.markdown}
@@ -263,15 +272,22 @@ function DownloadButton({
   filename,
   content,
   mimeType,
+  encoding = "text",
+  variant = "outline",
 }: {
   label: string;
   icon: typeof Download;
   filename: string;
   content: string;
   mimeType: string;
+  encoding?: "text" | "base64";
+  variant?: "default" | "outline";
 }) {
   function handleDownload() {
-    const blob = new Blob([content], { type: mimeType });
+    const blob =
+      encoding === "base64"
+        ? new Blob([Uint8Array.from(atob(content), (c) => c.charCodeAt(0))], { type: mimeType })
+        : new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -281,7 +297,7 @@ function DownloadButton({
   }
 
   return (
-    <Button type="button" variant="outline" size="sm" onClick={handleDownload}>
+    <Button type="button" variant={variant} size="sm" onClick={handleDownload}>
       <Icon className="size-4" />
       {label}
     </Button>
