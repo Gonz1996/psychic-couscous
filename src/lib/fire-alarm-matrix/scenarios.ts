@@ -34,6 +34,7 @@ function sharedAlarmSequence(cause: string): ScenarioEffect[] {
     { effectId: "DF-05", state: "OUVERT", rationale: "Ouverture du registre d'extraction à l'étage sinistré." },
     { effectId: "DF-06", state: "FERME", rationale: "Fermeture des registres des étages non visés pour concentrer l'extraction." },
     { effectId: "DF-08", state: "DISPONIBLE-MODE-POMPIER", rationale: "Le poste de commande des pompiers demeure disponible pour reprise manuelle." },
+    { effectId: "DF-09", state: "OUVERT", rationale: "Ouverture automatique (mécanique, non asservie au tableau) si la pressurisation active fait dépasser le seuil de surpression admissible." },
 
     { effectId: "EM-01", state: "ARRET", rationale: "Arrêt des ventilateurs d'évacuation générale non dédiés au désenfumage." },
 
@@ -63,6 +64,9 @@ function sharedAlarmSequence(cause: string): ScenarioEffect[] {
 
     { effectId: "CO-01", state: "ACTIF", rationale: "Statut du système radio pompier vérifié, actif en permanence." },
     { effectId: "CO-02", state: "ACTIF", rationale: "Interphonie d'urgence en cage d'escalier disponible." },
+
+    { effectId: "GN-01", state: "FERME", rationale: "Coupure automatique de l'alimentation en gaz naturel sur confirmation d'alarme incendie." },
+    { effectId: "SE-01", state: "ACTIF", rationale: "Priorisation de la caméra de la zone en alarme au poste de sécurité." },
   ];
 }
 
@@ -131,6 +135,7 @@ export const SCENARIOS: Scenario[] = [
     effects: [
       ...sharedAlarmSequence("Débit d'eau confirmé — zone de gicleurs"),
       { effectId: "PI-01", state: "MARCHE", rationale: "Le débit d'eau soutenu provoque généralement la chute de pression déclenchant le démarrage automatique de la pompe incendie.", references: [REF.pompeIncendie] },
+      { effectId: "GI-06", state: "ACTIF", rationale: "Sonnerie hydraulique locale actionnée mécaniquement par le débit d'eau — signal audible immédiat près de la vanne de zone, indépendant du tableau.", references: [REF.gongHydrauliqueGicleurs] },
     ],
     references: [REF.detecteursDebitGicleurs],
   },
@@ -177,6 +182,22 @@ export const SCENARIOS: Scenario[] = [
       { effectId: "AS-02", state: "RAPPEL-PALIER-ALTERNATIF", rationale: "Priorité absolue : si le palier en alarme est le palier de désignation, bascule immédiate et automatique vers le palier alternatif avant toute ouverture de porte." },
     ],
     references: [REF.rappelAscenseurs, REF.ascenseurRappelPhaseI],
+  },
+  {
+    id: "S22",
+    category: "alarme",
+    label: "Alarme — activation du système d'extinction de la hotte de cuisine commerciale",
+    initiatingDevice: "Système d'extinction fixe de hotte de cuisine commerciale (NFPA 96)",
+    description: "Le système d'extinction propre à une hotte de cuisine commerciale (aire commune ou local commercial du bâtiment) s'active sur un feu de friture/de cuisson.",
+    engineeringNotes:
+      "Double fonction, comme le détecteur de gaine (S02) : (1) fonction de COMMANDE locale et immédiate, indépendante du tableau — coupure du gaz/de l'électricité de la ligne de cuisson sous la hotte (CC-01), qui doit se produire même si le raccordement au réseau avertisseur du bâtiment est en dérangement ; (2) fonction de SIGNALISATION — le système est également raccordé comme dispositif initiateur au réseau avertisseur du bâtiment (CC-02), déclenchant la séquence complète d'évacuation puisqu'un feu de cuisson peut se propager au-delà du local. Seuls les projets avec une cuisine commerciale équipée (`hasCommercialKitchenHood`) sont visés — non applicable aux cuisines privées de logements.",
+    effects: [
+      ...sharedAlarmSequence("Activation du système d'extinction de la hotte de cuisine commerciale"),
+      { effectId: "CC-01", state: "ACTIF", delaySeconds: 0, rationale: "Coupure immédiate et locale du gaz/de l'électricité de la ligne de cuisson, indépendante du tableau.", references: [REF.extinctionHotteCuisine] },
+      { effectId: "CC-02", state: "ACTIF", rationale: "Signal transmis au réseau avertisseur du bâtiment comme dispositif initiateur.", references: [REF.extinctionHotteCuisine] },
+    ],
+    references: [REF.extinctionHotteCuisine],
+    appliesIf: (c) => c.hasCommercialKitchenHood,
   },
 
   // ═══════════════════════ Scénarios de SUPERVISION (gicleurs) — pas d'évacuation ═══════════════════════
@@ -228,6 +249,22 @@ export const SCENARIOS: Scenario[] = [
     ],
     references: [REF.detecteursDebitGicleurs],
   },
+  {
+    id: "S21",
+    category: "supervisory",
+    label: "Supervision — batterie du panneau de contrôle d'incendie faible ou défaillante",
+    initiatingDevice: "Circuit de supervision de la source secondaire (batteries) du panneau de contrôle d'incendie",
+    description: "Le panneau détecte que sa réserve de batteries est sous le seuil requis pour assurer l'autonomie prescrite (généralement 24 h en veille + 5 min en alarme) ou qu'une batterie est défectueuse.",
+    engineeringNotes:
+      "Signal de supervision/dérangement, pas une alarme feu — mais critique à surveiller puisqu'il conditionne la fiabilité du système advenant une perte simultanée de l'alimentation normale (voir S10 et S18). Contrairement aux signaux de supervision du réseau de gicleurs (S07-S09), celui-ci concerne le système d'alarme incendie lui-même et doit apparaître clairement distinct d'une alarme au tableau et à la télésurveillance.",
+    effects: [
+      { effectId: "AI-07", state: "SIGNAL-DERANGEMENT", rationale: "Indication de dérangement de la source secondaire au tableau principal." },
+      { effectId: "AI-08", state: "SIGNAL-DERANGEMENT", rationale: "Reproduction au(x) répétiteur(s)." },
+      { effectId: "AI-09", state: "ACTIF", rationale: "Transmission du dérangement à la télésurveillance." },
+      { effectId: "AI-12", state: "ACTIF", rationale: "Horodatage de l'événement." },
+    ],
+    references: [REF.supervisionBatterieTableau],
+  },
 
   // ═══════════════════════ Scénarios d'opération / défaillance ═══════════════════════
   {
@@ -269,6 +306,22 @@ export const SCENARIOS: Scenario[] = [
       { effectId: "DF-01", state: "POSITION-REPLI-SECURITAIRE", rationale: "Aucun démarrage automatique ; le ventilateur affecté demeure dans son état de repli défini à la conception jusqu'au rétablissement." },
     ],
     references: [REF.installationS524, REF.ascenseurPerteSignal],
+  },
+  {
+    id: "S23",
+    category: "derangement",
+    label: "Dérangement du système de communication bidirectionnelle pompiers (DAS)",
+    initiatingDevice: "Système d'aide aux communications des services d'urgence (antenne distribuée, amplificateurs)",
+    description: "Le système radio dédié aux services d'urgence (DAS/BDA) signale une perte de puissance, une défaillance d'amplificateur ou une perte de batterie de secours.",
+    engineeringNotes:
+      "N'affecte ni le désenfumage ni l'évacuation — c'est un système de communication d'urgence indépendant de la séquence d'alarme, mais son dérangement doit être signalé distinctement puisqu'il compromet la capacité radio des pompiers à l'intérieur du bâtiment lors d'une intervention. Applicable seulement aux projets dotés d'un tel système (`hasFireDeptRadioSystem`).",
+    effects: [
+      { effectId: "CO-01", state: "SIGNAL-DERANGEMENT", rationale: "Indication de dérangement du système radio pompier." },
+      { effectId: "AI-07", state: "SIGNAL-DERANGEMENT", rationale: "Reproduction au tableau principal." },
+      { effectId: "AI-09", state: "ACTIF", rationale: "Transmission du dérangement à la télésurveillance." },
+    ],
+    references: [REF.derangementDas],
+    appliesIf: (c) => c.hasFireDeptRadioSystem,
   },
   {
     id: "S18",

@@ -1,5 +1,24 @@
 import ExcelJS from "exceljs";
-import type { CodeReference, MatrixResult, ScenarioCategory } from "./types";
+import { getDiscipline, getPowerSource } from "./systems";
+import type { CodeReference, Discipline, MatrixResult, PowerSource, ScenarioCategory } from "./types";
+
+const DISCIPLINE_LABEL: Record<Discipline, string> = {
+  "protection-incendie": "Protection incendie",
+  electricite: "Électricité",
+  mecanique: "Mécanique",
+};
+
+const POWER_SOURCE_LABEL: Record<PowerSource, string> = {
+  normale: "Normale",
+  secours: "Secours",
+  "les-deux": "Normale + secours",
+};
+
+const DISCIPLINE_FILL: Record<Discipline, string> = {
+  "protection-incendie": "FFFBE5E5",
+  electricite: "FFFFF6DA",
+  mecanique: "FFE2ECF7",
+};
 
 /**
  * Export Excel (.xlsx) — le livrable destiné à la conception et à la revue
@@ -51,6 +70,7 @@ export async function toXlsxBuffer(matrix: MatrixResult): Promise<Buffer> {
 
   buildSommaireSheet(workbook, matrix);
   buildMatriceSheet(workbook, matrix);
+  buildPointsDeControleSheet(workbook, matrix);
   buildLegendeSheet(workbook);
   buildConfigurationSheet(workbook, matrix);
   buildReferencesSheet(workbook, matrix);
@@ -123,12 +143,28 @@ function buildSommaireSheet(workbook: ExcelJS.Workbook, matrix: MatrixResult) {
   sheet.getCell(`B${r}`).value = `${matrix.scenarios.length} scénarios (causes) × ${matrix.effects.length} points de contrôle (effets) — voir l'onglet « Matrice »`;
   sheet.getCell(`B${r}`).font = { size: 10, bold: true };
   r += 1;
-  sheet.getCell(`B${r}`).value = "Onglets : Sommaire · Matrice · Légende · Configuration du projet · Références normatives";
+  sheet.getCell(`B${r}`).value =
+    "Onglets : Sommaire · Matrice · Points de contrôle · Légende · Configuration du projet · Références normatives";
   sheet.getCell(`B${r}`).font = { size: 10, color: { argb: "FF444444" } };
+
+  sheet.pageSetup = { orientation: "portrait", fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
 }
 
 function buildMatriceSheet(workbook: ExcelJS.Workbook, matrix: MatrixResult) {
   const sheet = workbook.addWorksheet("Matrice", { properties: { tabColor: { argb: argb(NAVY) } }, views: [{ state: "frozen", xSplit: 3, ySplit: 1 }] });
+  sheet.pageSetup = {
+    orientation: "landscape",
+    fitToPage: true,
+    fitToWidth: 1,
+    fitToHeight: 0,
+    paperSize: 9, // A4
+  };
+  sheet.headerFooter = {
+    oddHeader: `&L&8${matrix.config.projectName}&C&8Matrice causes-effets — alarme incendie&R&8${new Date(matrix.generatedAt).toLocaleDateString("fr-CA")}`,
+    oddFooter: "&L&8À valider par l'ingénieur au dossier&C&8&P / &N&R&8Confidentiel — usage interne du projet",
+  };
+  sheet.pageSetup.printTitlesRow = "1:1";
+  sheet.pageSetup.printTitlesColumn = "A:C";
 
   const idCols = [
     { header: "Scénario (cause)", width: 46 },
@@ -202,6 +238,58 @@ function buildMatriceSheet(workbook: ExcelJS.Workbook, matrix: MatrixResult) {
   sheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 3 + matrix.effects.length } };
 }
 
+/**
+ * Feuille de référence listant chaque colonne de la matrice avec son
+ * corps de métier responsable, sa source d'alimentation et sa justification
+ * normative complète — l'information que la feuille Matrice ne peut pas
+ * afficher en largeur de colonne mais que la conception de détail exige.
+ */
+function buildPointsDeControleSheet(workbook: ExcelJS.Workbook, matrix: MatrixResult) {
+  const sheet = workbook.addWorksheet("Points de contrôle", {
+    properties: { tabColor: { argb: argb(NAVY) } },
+    views: [{ state: "frozen", ySplit: 1 }],
+  });
+  sheet.pageSetup = { orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+  sheet.columns = [
+    { width: 10 }, // ID
+    { width: 20 }, // Catégorie
+    { width: 20 }, // Discipline
+    { width: 18 }, // Alimentation
+    { width: 46 }, // Système
+    { width: 46 }, // Point commandé
+    { width: 40 }, // Référence(s)
+  ];
+
+  const header = sheet.getRow(1);
+  header.values = ["ID", "Catégorie", "Discipline", "Alimentation", "Système", "Point commandé", "Référence(s)"];
+  header.eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: WHITE } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: argb(NAVY) } };
+    cell.border = thinBorder();
+  });
+
+  matrix.effects.forEach((e, i) => {
+    const r = i + 2;
+    const discipline = getDiscipline(e);
+    sheet.getCell(`A${r}`).value = e.id;
+    sheet.getCell(`A${r}`).font = { bold: true };
+    sheet.getCell(`B${r}`).value = e.category;
+    sheet.getCell(`C${r}`).value = DISCIPLINE_LABEL[discipline];
+    sheet.getCell(`D${r}`).value = POWER_SOURCE_LABEL[getPowerSource(e)];
+    sheet.getCell(`E${r}`).value = e.system;
+    sheet.getCell(`F${r}`).value = e.point;
+    sheet.getCell(`G${r}`).value = e.references.map(formatRef).join(" ; ");
+    for (const col of ["A", "B", "C", "D", "E", "F", "G"]) {
+      const cell = sheet.getCell(`${col}${r}`);
+      cell.border = thinBorder();
+      cell.alignment = { wrapText: true, vertical: "middle" };
+    }
+    sheet.getCell(`C${r}`).fill = { type: "pattern", pattern: "solid", fgColor: { argb: DISCIPLINE_FILL[discipline] } };
+  });
+
+  sheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 7 } };
+}
+
 function buildLegendeSheet(workbook: ExcelJS.Workbook) {
   const sheet = workbook.addWorksheet("Légende");
   sheet.columns = [{ width: 32 }, { width: 90 }];
@@ -248,6 +336,17 @@ function buildLegendeSheet(workbook: ExcelJS.Workbook) {
     sheet.getCell(`A${r}`).fill = { type: "pattern", pattern: "solid", fgColor: { argb: CATEGORY_FILL[cat] } };
     sheet.getCell(`A${r}`).border = thinBorder();
   });
+
+  const disciplineStart = rows.length + categories.length + 5;
+  sheet.getCell(`A${disciplineStart}`).value = "Code de couleur des disciplines (onglet Points de contrôle)";
+  sheet.getCell(`A${disciplineStart}`).font = { bold: true };
+  const disciplines: Discipline[] = ["protection-incendie", "electricite", "mecanique"];
+  disciplines.forEach((d, i) => {
+    const r = disciplineStart + 1 + i;
+    sheet.getCell(`A${r}`).value = DISCIPLINE_LABEL[d];
+    sheet.getCell(`A${r}`).fill = { type: "pattern", pattern: "solid", fgColor: { argb: DISCIPLINE_FILL[d] } };
+    sheet.getCell(`A${r}`).border = thinBorder();
+  });
 }
 
 function buildConfigurationSheet(workbook: ExcelJS.Workbook, matrix: MatrixResult) {
@@ -276,6 +375,9 @@ function buildConfigurationSheet(workbook: ExcelJS.Workbook, matrix: MatrixResul
     ["Réentrée aux cages d'escalier", c.hasStairReentry ? "Oui" : "Non"],
     ["Système radio pompier (DAS)", c.hasFireDeptRadioSystem ? "Oui" : "Non"],
     ["Interphonie d'urgence en cage d'escalier", c.hasEmergencyIntercomInStairs ? "Oui" : "Non"],
+    ["Vanne d'arrêt automatique du gaz naturel", c.hasNaturalGasShutoff ? "Oui" : "Non"],
+    ["Cuisine commerciale avec hotte et extinction dédiée", c.hasCommercialKitchenHood ? "Oui" : "Non"],
+    ["Vidéosurveillance (CCTV) intégrée au poste de sécurité", c.hasCctv ? "Oui" : "Non"],
     ["Notes", c.notes ?? "—"],
   ];
 

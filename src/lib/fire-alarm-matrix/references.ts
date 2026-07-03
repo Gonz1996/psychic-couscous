@@ -115,6 +115,51 @@ export const REF = {
     clause: "conception",
     note: "Référence de dimensionnement/conception des systèmes de contrôle de fumée — usage courant en pratique québécoise",
   } satisfies CodeReference,
+  registresAntiRefoulement: {
+    code: "NFPA-92",
+    clause: "conception",
+    note: "Registres antirefoulement (barométriques) limitant la surpression dans les cages pressurisées",
+  } satisfies CodeReference,
+
+  // --- Gicleurs — dispositif mécanique local ---
+  gongHydrauliqueGicleurs: {
+    code: "CNB2015",
+    clause: "3.2.4.10",
+    note: "Avertisseur hydraulique local (gong) actionné par le débit d'eau, indépendant du signal électronique au tableau",
+  } satisfies CodeReference,
+
+  // --- Gaz naturel ---
+  arretGazNaturel: {
+    code: "CSA-B149",
+    clause: "1",
+    note: "Vanne d'arrêt automatique du gaz asservie à l'alarme incendie — exigence/choix de conception à confirmer avec le distributeur et l'AHJ",
+  } satisfies CodeReference,
+
+  // --- Cuisine commerciale ---
+  extinctionHotteCuisine: {
+    code: "NFPA-96",
+    clause: "conception",
+    note: "Système d'extinction fixe de hotte de cuisine commerciale — coupure du gaz/de l'électricité de la ligne de cuisson à l'activation",
+  } satisfies CodeReference,
+
+  // --- Sécurité électronique (hors code incendie, intégration au poste de sécurité) ---
+  cctvIntegration: {
+    code: "RBQ",
+    clause: "à confirmer",
+    note: "Intégration CCTV au poste de sécurité — exigence non normative incendie ; choix de conception/exploitation du bâtiment",
+  } satisfies CodeReference,
+
+  supervisionBatterieTableau: {
+    code: "CAN-ULC-S524",
+    clause: "généralités",
+    note: "Supervision de la source secondaire (batteries) du panneau de contrôle d'incendie",
+  } satisfies CodeReference,
+
+  derangementDas: {
+    code: "RBQ",
+    clause: "à confirmer",
+    note: "Dérangement du système de communication bidirectionnelle pompiers (antenne distribuée) — exigence locale à confirmer avec le service incendie",
+  } satisfies CodeReference,
 
   bulletinRBQ: {
     code: "RBQ",

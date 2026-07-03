@@ -1,5 +1,63 @@
 import { REF } from "./references";
-import type { EffectPoint } from "./types";
+import type { Discipline, EffectPoint, PowerSource, SystemCategory } from "./types";
+
+/**
+ * Corps de métier et source d'alimentation PAR DÉFAUT selon la catégorie de
+ * système — plutôt que d'annoter individuellement chacun des points de
+ * contrôle (source d'erreurs et de dérive au fil des ajouts), un point
+ * hérite de sa catégorie sauf s'il déclare explicitement `discipline`/
+ * `powerSource` pour une exception justifiée. Voir `getDiscipline` /
+ * `getPowerSource` ci-dessous — c'est par là que le reste du code (exports
+ * CSV/Markdown/Excel) doit lire ces informations, jamais directement
+ * `point.discipline`.
+ */
+export const CATEGORY_DISCIPLINE: Record<SystemCategory, Discipline> = {
+  "alarme-incendie": "protection-incendie",
+  communication: "protection-incendie",
+  desenfumage: "mecanique",
+  "evacuation-mecanique": "mecanique",
+  "traitement-air": "mecanique",
+  volets: "mecanique",
+  "ventilation-mecanique": "mecanique",
+  gicleurs: "mecanique",
+  "pompes-incendie": "mecanique",
+  ascenseurs: "electricite",
+  "controle-acces": "electricite",
+  "portes-verrouillage": "electricite",
+  generatrice: "electricite",
+  "eclairage-securite": "electricite",
+  gaz: "mecanique",
+  "cuisine-commerciale": "mecanique",
+  "securite-electronique": "electricite",
+};
+
+export const CATEGORY_POWER_SOURCE: Record<SystemCategory, PowerSource> = {
+  "alarme-incendie": "les-deux",
+  communication: "les-deux",
+  desenfumage: "secours",
+  "evacuation-mecanique": "normale",
+  "traitement-air": "normale",
+  volets: "les-deux",
+  "ventilation-mecanique": "normale",
+  gicleurs: "les-deux",
+  "pompes-incendie": "secours",
+  ascenseurs: "secours",
+  "controle-acces": "les-deux",
+  "portes-verrouillage": "les-deux",
+  generatrice: "secours",
+  "eclairage-securite": "secours",
+  gaz: "les-deux",
+  "cuisine-commerciale": "normale",
+  "securite-electronique": "secours",
+};
+
+export function getDiscipline(point: EffectPoint): Discipline {
+  return point.discipline ?? CATEGORY_DISCIPLINE[point.category];
+}
+
+export function getPowerSource(point: EffectPoint): PowerSource {
+  return point.powerSource ?? CATEGORY_POWER_SOURCE[point.category];
+}
 
 /**
  * Catalogue des points de contrôle (colonnes de la matrice).
@@ -609,6 +667,83 @@ export const EFFECT_POINTS: EffectPoint[] = [
     description: "Confirmation que les affichages de sortie demeurent alimentés par la source de secours durant l'interruption de l'alimentation normale.",
     references: [REF.alimentationSecours],
     appliesIf: (c) => c.hasStandbyGenerator,
+  },
+
+  // ───────────────────────── Désenfumage — équipement mécanique complémentaire ─────────────────────────
+  {
+    id: "DF-09",
+    category: "desenfumage",
+    system: "Registres antirefoulement (barométriques) — cage(s) d'escalier pressurisée(s)",
+    point: "Ouverture automatique (limitation de surpression)",
+    zoneScope: "cage-escalier",
+    description:
+      "Registre mécanique (non motorisé, non asservi au tableau) qui s'ouvre automatiquement lorsque la pression dans la cage dépasse le seuil admissible, afin que la force requise pour ouvrir les portes d'issue demeure conforme au code — sans ce dispositif, la pressurisation elle-même peut rendre les portes d'issue impossibles à ouvrir.",
+    references: [REF.registresAntiRefoulement, REF.pressurisationCagesEscalier],
+    discipline: "mecanique",
+    powerSource: "les-deux",
+  },
+
+  // ───────────────────────── Gicleurs — dispositif mécanique local ─────────────────────────
+  {
+    id: "GI-06",
+    category: "gicleurs",
+    system: "Avertisseur hydraulique (gong) — zone de gicleurs",
+    point: "Sonnerie locale actionnée par le débit d'eau",
+    zoneScope: "etage-sinistre",
+    description:
+      "Dispositif purement mécanique/hydraulique (roue à eau entraînant un gong), indépendant de l'alimentation électrique et du tableau — signal local audible à proximité de la vanne de zone, complémentaire (pas un substitut) au signal électronique GI-01 transmis au tableau.",
+    references: [REF.gongHydrauliqueGicleurs],
+    discipline: "mecanique",
+    powerSource: "les-deux",
+  },
+
+  // ───────────────────────── Gaz naturel ─────────────────────────
+  {
+    id: "GN-01",
+    category: "gaz",
+    system: "Vanne d'arrêt automatique du gaz naturel",
+    point: "Fermeture",
+    zoneScope: "tout-le-batiment",
+    description:
+      "Coupure automatique de l'alimentation en gaz naturel du bâtiment (ou de la zone en alarme, selon le zonage retenu) sur confirmation d'alarme incendie — mesure de conception fréquente mais non universellement exigée par le CNB ; à documenter selon l'analyse de risque du projet et les exigences du distributeur de gaz.",
+    references: [REF.arretGazNaturel],
+    appliesIf: (c) => c.hasNaturalGasShutoff,
+  },
+
+  // ───────────────────────── Cuisine commerciale (si présente) ─────────────────────────
+  {
+    id: "CC-01",
+    category: "cuisine-commerciale",
+    system: "Système d'extinction fixe de la hotte de cuisine commerciale",
+    point: "Coupure du gaz/de l'électricité de la ligne de cuisson à l'activation",
+    zoneScope: "local-technique",
+    description:
+      "L'activation du système d'extinction propre à la hotte (déclenchement local, indépendant d'une alarme provenant d'ailleurs dans le bâtiment) coupe automatiquement l'alimentation en combustible/électricité des appareils de cuisson sous la hotte, conformément à NFPA 96.",
+    references: [REF.extinctionHotteCuisine],
+    appliesIf: (c) => c.hasCommercialKitchenHood,
+  },
+  {
+    id: "CC-02",
+    category: "cuisine-commerciale",
+    system: "Système d'extinction fixe de la hotte de cuisine commerciale",
+    point: "Signal d'alarme transmis au tableau du bâtiment",
+    zoneScope: "local-technique",
+    description: "L'activation du système d'extinction de la hotte est également raccordée au réseau avertisseur du bâtiment comme dispositif initiateur (voir scénario dédié).",
+    references: [REF.extinctionHotteCuisine],
+    appliesIf: (c) => c.hasCommercialKitchenHood,
+  },
+
+  // ───────────────────────── Sécurité électronique (intégration, hors code incendie) ─────────────────────────
+  {
+    id: "SE-01",
+    category: "securite-electronique",
+    system: "Système de vidéosurveillance (CCTV)",
+    point: "Enregistrement prioritaire / rappel de la caméra de la zone en alarme au poste de sécurité",
+    zoneScope: "etage-sinistre",
+    description:
+      "Intégration usuelle en exploitation de bâtiment (pas une exigence du code incendie) : la caméra de la zone en alarme est automatiquement affichée/priorisée au poste de sécurité et son enregistrement est marqué pour conservation prolongée.",
+    references: [REF.cctvIntegration],
+    appliesIf: (c) => c.hasCctv,
   },
 ];
 

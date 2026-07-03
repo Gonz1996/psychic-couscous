@@ -25,6 +25,9 @@ const EQUIPMENT_FIELDS: { name: string; label: string; defaultChecked?: boolean 
   { name: "hasStairReentry", label: "Réentrée aux cages d'escalier" },
   { name: "hasFireDeptRadioSystem", label: "Système radio pompier (DAS)" },
   { name: "hasEmergencyIntercomInStairs", label: "Interphonie d'urgence en cage d'escalier" },
+  { name: "hasNaturalGasShutoff", label: "Vanne d'arrêt automatique du gaz naturel" },
+  { name: "hasCommercialKitchenHood", label: "Cuisine commerciale (hotte + extinction dédiée)" },
+  { name: "hasCctv", label: "Vidéosurveillance (CCTV) au poste de sécurité", defaultChecked: true },
 ];
 
 export function FireAlarmMatrixForm() {

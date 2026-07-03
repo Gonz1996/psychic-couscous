@@ -1,4 +1,5 @@
-import type { CodeReference, MatrixResult, ScenarioCategory } from "./types";
+import { getDiscipline, getPowerSource } from "./systems";
+import type { CodeReference, Discipline, MatrixResult, PowerSource, ScenarioCategory } from "./types";
 
 function csvEscape(value: string): string {
   if (/[";\n]/.test(value)) {
@@ -17,6 +18,18 @@ const CATEGORY_LABEL: Record<ScenarioCategory, string> = {
   derangement: "Dérangement",
   operation: "Opération manuelle",
   essai: "Essai / vérification",
+};
+
+export const DISCIPLINE_LABEL: Record<Discipline, string> = {
+  "protection-incendie": "Protection incendie",
+  electricite: "Électricité",
+  mecanique: "Mécanique",
+};
+
+export const POWER_SOURCE_LABEL: Record<PowerSource, string> = {
+  normale: "Normale",
+  secours: "Secours",
+  "les-deux": "Normale + secours",
 };
 
 /**
@@ -86,6 +99,9 @@ export function toMarkdown(matrix: MatrixResult): string {
   out.push(`| Réentrée aux cages d'escalier | ${config.hasStairReentry ? "Oui" : "Non"} |`);
   out.push(`| Système radio pompier (DAS) | ${config.hasFireDeptRadioSystem ? "Oui" : "Non"} |`);
   out.push(`| Interphonie d'urgence en cage d'escalier | ${config.hasEmergencyIntercomInStairs ? "Oui" : "Non"} |`);
+  out.push(`| Vanne d'arrêt automatique du gaz naturel | ${config.hasNaturalGasShutoff ? "Oui" : "Non"} |`);
+  out.push(`| Cuisine commerciale avec hotte et extinction dédiée | ${config.hasCommercialKitchenHood ? "Oui" : "Non"} |`);
+  out.push(`| Vidéosurveillance (CCTV) intégrée au poste de sécurité | ${config.hasCctv ? "Oui" : "Non"} |`);
   if (config.notes) out.push(`| Notes | ${config.notes} |`);
   out.push("");
 
@@ -102,10 +118,12 @@ export function toMarkdown(matrix: MatrixResult): string {
 
   out.push(`## Points de contrôle retenus (colonnes)`);
   out.push("");
-  out.push("| ID | Catégorie | Système | Point commandé | Référence(s) |");
-  out.push("|---|---|---|---|---|");
+  out.push("| ID | Catégorie | Discipline | Alimentation | Système | Point commandé | Référence(s) |");
+  out.push("|---|---|---|---|---|---|---|");
   for (const e of matrix.effects) {
-    out.push(`| ${e.id} | ${e.category} | ${e.system} | ${e.point} | ${e.references.map(formatRef).join("; ")} |`);
+    out.push(
+      `| ${e.id} | ${e.category} | ${DISCIPLINE_LABEL[getDiscipline(e)]} | ${POWER_SOURCE_LABEL[getPowerSource(e)]} | ${e.system} | ${e.point} | ${e.references.map(formatRef).join("; ")} |`,
+    );
   }
   out.push("");
 

@@ -27,6 +27,9 @@ export const projectConfigSchema = z.object({
   hasStairReentry: z.boolean(),
   hasFireDeptRadioSystem: z.boolean(),
   hasEmergencyIntercomInStairs: z.boolean(),
+  hasNaturalGasShutoff: z.boolean(),
+  hasCommercialKitchenHood: z.boolean(),
+  hasCctv: z.boolean(),
   notes: z.string().optional(),
 }) satisfies z.ZodType<ProjectConfig>;
 
@@ -57,6 +60,9 @@ export const DEFAULT_PROJECT_CONFIG: ProjectConfig = {
   hasStairReentry: true,
   hasFireDeptRadioSystem: true,
   hasEmergencyIntercomInStairs: false,
+  hasNaturalGasShutoff: false,
+  hasCommercialKitchenHood: false,
+  hasCctv: true,
 };
 
 export function loadProjectConfig(input: unknown): ProjectConfig {
