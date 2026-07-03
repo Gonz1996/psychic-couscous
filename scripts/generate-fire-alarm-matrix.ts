@@ -12,16 +12,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { generateCauseEffectMatrix, loadProjectConfig, toCsv, toMarkdown } from "../src/lib/fire-alarm-matrix";
-
-function slugify(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+import { generateCauseEffectMatrix, loadProjectConfig, slugify, toCsv, toMarkdown } from "../src/lib/fire-alarm-matrix";
 
 function main() {
   const [, , configArg, outDirArg] = process.argv;
