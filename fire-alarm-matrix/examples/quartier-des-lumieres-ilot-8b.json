@@ -1,0 +1,21 @@
+{
+  "projectName": "Quartier des Lumières — Îlot 8B",
+  "preparedBy": "À compléter par l'ingénieur au dossier",
+  "isHighBuilding": true,
+  "numberOfExitStairs": 4,
+  "smokeControlApproach": "extraction-etage-sinistre",
+  "hasUndergroundParking": true,
+  "hasFirefightersElevator": true,
+  "hasElectromagneticAccessControlDoors": true,
+  "hasVoiceCommunication": true,
+  "hasStandbyGenerator": true,
+  "hasFirePump": true,
+  "hasJockeyPump": true,
+  "hasWetSprinklerThroughout": true,
+  "hasDuctSmokeDetectors": true,
+  "suiteSmokeAlarmsReportToFacp": true,
+  "hasStairReentry": true,
+  "hasFireDeptRadioSystem": true,
+  "hasEmergencyIntercomInStairs": false,
+  "notes": "Configuration établie à partir des réponses fournies par le client (4 cages d'escalier, approche par extraction à l'étage sinistré, garage souterrain, ascenseur pompier dédié, contrôle d'accès électromagnétique, génératrice, pompe incendie + jockey, détecteurs de gaine, avertisseurs de logement interconnectés). Adresse et numéro de projet à compléter."
+}
